@@ -1,47 +1,50 @@
-import { 
-  Record, 
-  ActionHash, 
-  DnaHash,
-  SignedActionHashed,
-  EntryHash, 
-  AgentPubKey,
-  Create,
-  Update,
-  Delete,
-  CreateLink,
-  DeleteLink
-} from '@holochain/client';
 import { ActionCommittedSignal } from '@holochain-open-dev/utils';
+import {
+	ActionHash,
+	AgentPubKey,
+	Create,
+	CreateLink,
+	Delete,
+	DeleteLink,
+	DnaHash,
+	EntryHash,
+	Record,
+	SignedActionHashed,
+	Update,
+} from '@holochain/client';
 
 export type TasksSignal = ActionCommittedSignal<EntryTypes, LinkTypes>;
 
-export type EntryTypes =
- | ({  type: 'Task'; } & Task);
+export type EntryTypes = { type: 'Task' } & Task;
 
-export type LinkTypes = string;
+export type LinkTypes = 'AssigneeToTasks' | 'Dependency' | 'TaskUpdates';
 
+export type TaskStatus =
+	| 'Ready'
+	| 'Blocked'
+	| 'InProgress'
+	| 'Done'
+	| 'Cancelled';
 
-export interface TaskStatus {
-  type:  
-    | 'Ready'
-        | 'Blocked'
-        | 'InProgress'
-        | 'Done'
-        | 'Cancelled'
-    ;
+export interface TaskDependency {
+	original_revision_hash: ActionHash;
+	last_revision_hash: ActionHash;
+	status: TaskStatus;
+	optional: boolean;
 }
 
-export interface Task { 
-  name: string;
+export interface Task {
+	original_create_hash: ActionHash | undefined;
 
-  description: string;
+	name: string;
 
-  deadline: number | undefined;
+	description: string;
 
-  assignee: AgentPubKey;
+	deadline: number | undefined;
 
-  dependencies: Array<ActionHash>;
+	assignee: AgentPubKey;
 
-  status: TaskStatus;
+	dependencies: Array<TaskDependency>;
+
+	status: TaskStatus;
 }
-

@@ -76,8 +76,9 @@ export class TasksZomeMock extends ZomeMock implements AppClient {
 		]);
 		await Promise.all(
 			task.dependencies.map(async dependencies => {
-				const existingDependencies = this.tasksForTask.get(dependencies) || [];
-				this.tasksForTask.set(dependencies, [
+				const existingDependencies =
+					this.tasksForTask.get(dependencies.original_revision_hash) || [];
+				this.tasksForTask.set(dependencies.original_revision_hash, [
 					...existingDependencies,
 					{
 						target: record.signed_action.hashed.hash,
@@ -169,8 +170,9 @@ export class TasksZomeMock extends ZomeMock implements AppClient {
 		]);
 		await Promise.all(
 			task.dependencies.map(async dependencies => {
-				const existingDependencies = this.tasksForTask.get(dependencies) || [];
-				this.tasksForTask.set(dependencies, [
+				const existingDependencies =
+					this.tasksForTask.get(dependencies.original_revision_hash) || [];
+				this.tasksForTask.set(dependencies.original_revision_hash, [
 					...existingDependencies,
 					{
 						target: record.signed_action.hashed.hash,
@@ -205,12 +207,13 @@ export async function sampleTask(
 ): Promise<Task> {
 	return {
 		...{
+			original_create_hash: undefined,
 			name: 'Lorem ipsum 2',
 			description: 'Lorem ipsum 2',
 			deadline: Date.now() * 1000,
 			assignee: client.client.myPubKey,
 			dependencies: [],
-			status: { type: 'Ready' },
+			status: 'Ready',
 		},
 		...partialTask,
 	};

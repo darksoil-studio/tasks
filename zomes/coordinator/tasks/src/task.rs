@@ -1,6 +1,8 @@
 use hdk::prelude::*;
 use tasks_integrity::*;
 
+use crate::utils::{create_link_relaxed, delete_link_relaxed, update_relaxed};
+
 #[hdk_extern]
 pub fn create_task(task: Task) -> ExternResult<Record> {
     let task_hash = create_entry(&EntryTypes::Task(task.clone()))?;
@@ -10,8 +12,13 @@ pub fn create_task(task: Task) -> ExternResult<Record> {
         LinkTypes::AssigneeToTasks,
         (),
     )?;
-    for base in task.dependencies.clone() {
-        create_link(base, task_hash.clone(), LinkTypes::Dependency, ())?;
+    for dependency in task.dependencies.clone() {
+        create_link(
+            dependency.original_revision_hash,
+            task_hash.clone(),
+            LinkTypes::Dependency,
+            dependency.last_revision_hash.into_inner(),
+        )?;
     }
     let record = get(task_hash.clone(), GetOptions::default())?.ok_or(wasm_error!(
         WasmErrorInner::Guest("Could not find the newly created Task".to_string())
@@ -83,25 +90,178 @@ pub fn get_all_revisions_for_task(original_task_hash: ActionHash) -> ExternResul
 }
 
 #[derive(Serialize, Deserialize, Debug)]
+pub struct CreateUpdateLinkForTaskInput {
+    pub original_task_hash: ActionHash,
+    pub new_task_hash: ActionHash,
+}
+#[hdk_extern]
+pub fn create_update_link_for_task(input: CreateUpdateLinkForTaskInput) -> ExternResult<()> {
+    create_link_relaxed(
+        input.original_task_hash.clone(),
+        input.new_task_hash.clone(),
+        LinkTypes::TaskUpdates,
+        (),
+    )?;
+    Ok(())
+}
+
+#[derive(Serialize, Deserialize, Debug)]
 pub struct UpdateTaskInput {
     pub original_task_hash: ActionHash,
     pub previous_task_hash: ActionHash,
     pub updated_task: Task,
 }
-
 #[hdk_extern]
-pub fn update_task(input: UpdateTaskInput) -> ExternResult<Record> {
-    let updated_task_hash = update_entry(input.previous_task_hash.clone(), &input.updated_task)?;
-    create_link(
-        input.original_task_hash.clone(),
-        updated_task_hash.clone(),
-        LinkTypes::TaskUpdates,
-        (),
+pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
+    update_relaxed(
+        input.previous_task_hash.clone(),
+        EntryTypes::Task(input.updated_task.clone()),
     )?;
-    let record = get(updated_task_hash.clone(), GetOptions::default())?.ok_or(wasm_error!(
-        WasmErrorInner::Guest("Could not find the newly updated Task".to_string())
-    ))?;
-    Ok(record)
+    let Some(previous_task_record) = get(input.previous_task_hash, GetOptions::default())? else {
+        return Err(wasm_error!(WasmErrorInner::Guest(String::from(
+            "Previous task not found",
+        ))));
+    };
+
+    let previous_task: crate::Task = previous_task_record
+        .entry()
+        .to_app_option()
+        .map_err(|e| wasm_error!(e))?
+        .ok_or(wasm_error!(WasmErrorInner::Guest(String::from(
+            "Dependant action must be accompanied by an entry"
+        ))))?;
+
+    let previous_dependencies: Vec<ActionHash> = previous_task
+        .dependencies
+        .iter()
+        .map(|d| d.original_revision_hash.clone())
+        .collect();
+    let new_dependencies: Vec<ActionHash> = input
+        .updated_task
+        .dependencies
+        .iter()
+        .map(|d| d.original_revision_hash.clone())
+        .collect();
+
+    let removed_dependencies: Vec<TaskDependency> = previous_task
+        .dependencies
+        .into_iter()
+        .filter(|previous_dep| !new_dependencies.contains(&previous_dep.original_revision_hash))
+        .collect();
+    let added_dependencies: Vec<TaskDependency> = input
+        .updated_task
+        .dependencies
+        .into_iter()
+        .filter(|new_dep| !previous_dependencies.contains(&new_dep.original_revision_hash))
+        .collect();
+
+    for dependency in added_dependencies {
+        create_link_relaxed(
+            dependency.original_revision_hash,
+            input.original_task_hash.clone(),
+            LinkTypes::Dependency,
+            dependency.last_revision_hash.into_inner(),
+        )?;
+    }
+
+    for dependency in removed_dependencies {
+        let links = get_links(
+            GetLinksInputBuilder::try_new(
+                dependency.original_revision_hash,
+                LinkTypes::Dependency,
+            )?
+            .tag_prefix(LinkTag::from(dependency.last_revision_hash.into_inner()))
+            .build(),
+        )?;
+
+        for link in links {
+            delete_link_relaxed(link.create_link_hash)?;
+        }
+    }
+
+    // if dependant_task_update_needed(previous_task.status, input.updated_task.status) {
+    //     let dependant_tasks = get_dependent_tasks_for_task(input.original_task_hash)?;
+    //     for link in dependant_tasks {
+    //         let original_task_hash =
+    //             link.target
+    //                 .into_action_hash()
+    //                 .ok_or(wasm_error!(WasmErrorInner::Guest(String::from(
+    //                     "Dependant task link does not have an ActionHash"
+    //                 ))))?;
+    //         let task_record = get_latest_task(original_task_hash)?.ok_or(wasm_error!(
+    //             WasmErrorInner::Guest(String::from("Could not find dependant task"))
+    //         ))?;
+    //         let dependant_task: crate::Task = task_record
+    //             .entry()
+    //             .to_app_option()
+    //             .map_err(|e| wasm_error!(e))?
+    //             .ok_or(wasm_error!(WasmErrorInner::Guest(String::from(
+    //                 "Dependant action must be accompanied by an entry"
+    //             ))))?;
+
+    //         for dependency in &mut dependant_task.dependencies {
+    //             if dependency
+    //                 .original_revision_hash
+    //                 .eq(&input.original_action_hash)
+    //             {
+    //                 dependency.last_revision_hash = task_hash;
+    //                 dependency.status = input.task.status;
+    //             }
+    //         }
+    //         if let Some(new_status) =
+    //             new_status_from_dependencies(dependant_task.status, dependant_task.dependencies)
+    //         {
+    //             dependant_task.status = new_status;
+    //             update_task(UpdateTaskInput {
+    //                 original_task_hash,
+    //                 previous_task_hash: task_record.action_address().clone(),
+    //                 updated_task: dependant_task,
+    //             })?;
+    //         }
+    //     }
+    // }
+    Ok(())
+}
+
+pub fn new_status_from_dependencies(
+    current_status: TaskStatus,
+    dependencies: Vec<TaskDependency>,
+) -> Option<TaskStatus> {
+    let non_optional_dependencies: Vec<TaskDependency> =
+        dependencies.into_iter().filter(|d| !d.optional).collect();
+    match current_status {
+        TaskStatus::Blocked => {
+            if non_optional_dependencies
+                .iter()
+                .all(|d| d.status.eq(&TaskStatus::Done))
+            {
+                return Some(TaskStatus::Ready);
+            }
+            None
+        }
+        TaskStatus::Ready | TaskStatus::InProgress => {
+            if non_optional_dependencies
+                .iter()
+                .any(|d| !d.status.eq(&TaskStatus::Done))
+            {
+                return Some(TaskStatus::Blocked);
+            }
+            None
+        }
+        _ => None,
+    }
+}
+
+pub fn dependant_task_update_needed(previous_status: TaskStatus, new_status: TaskStatus) -> bool {
+    if previous_status.eq(&new_status) {
+        return false;
+    }
+    match (previous_status, new_status) {
+        (_, TaskStatus::Done) => true,
+        (TaskStatus::Done, TaskStatus::Ready) => true,
+        (TaskStatus::Done, TaskStatus::InProgress) => true,
+        _ => false,
+    }
 }
 
 #[hdk_extern]
@@ -132,9 +292,13 @@ pub fn delete_task(original_task_hash: ActionHash) -> ExternResult<ActionHash> {
             }
         }
     }
-    for base_address in task.dependencies {
+    for dependency in task.dependencies {
         let links = get_links(
-            GetLinksInputBuilder::try_new(base_address.clone(), LinkTypes::Dependency)?.build(),
+            GetLinksInputBuilder::try_new(
+                dependency.original_revision_hash.clone(),
+                LinkTypes::Dependency,
+            )?
+            .build(),
         )?;
         for link in links {
             if let Some(action_hash) = link.target.into_action_hash() {

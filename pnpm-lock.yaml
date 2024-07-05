@@ -47,12 +47,12 @@ importers:
       '@api-viewer/docs':
         specifier: 1.0.0-pre.10
         version: 1.0.0-pre.10
+      '@darksoil-studio/tasks':
+        specifier: workspace:*
+        version: link:../ui
       '@holochain-open-dev/profiles':
         specifier: github:holochain-open-dev/profiles#nixify&path:ui
         version: https://codeload.github.com/holochain-open-dev/profiles/tar.gz/748bb4879e247eff44a4a23a8d2aaa02a585578a#path:ui(@types/react@18.3.3)
-      '@holochain-open-dev/tasks':
-        specifier: workspace:*
-        version: link:../ui
       '@holochain/client':
         specifier: ^0.17.0
         version: 0.17.0
@@ -84,7 +84,7 @@ importers:
         specifier: ^0.17.0
         version: 0.17.0
       '@holochain/tryorama':
-        specifier: ^0.16.0-dev.7
+        specifier: ^0.16.0
         version: 0.16.0
       '@msgpack/msgpack':
         specifier: ^2.8.0

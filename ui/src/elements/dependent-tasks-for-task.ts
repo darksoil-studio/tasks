@@ -60,7 +60,7 @@ export class DependentTasksForTask extends SignalWatcher(LitElement) {
 	render() {
 		const hashes = this.tasksStore.tasks
 			.get(this.taskHash)
-			.dependencies.live.get();
+			.dependentTasks.live.get();
 
 		switch (hashes.status) {
 			case 'pending':

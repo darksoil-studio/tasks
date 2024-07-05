@@ -58,13 +58,12 @@ export class TasksClient extends ZomeClient<TasksSignal> {
 		originalTaskHash: ActionHash,
 		previousTaskHash: ActionHash,
 		updatedTask: Task,
-	): Promise<EntryRecord<Task>> {
-		const record: Record = await this.callZome('update_task', {
+	): Promise<void> {
+		await this.callZome('update_task', {
 			original_task_hash: originalTaskHash,
 			previous_task_hash: previousTaskHash,
 			updated_task: updatedTask,
 		});
-		return new EntryRecord(record);
 	}
 
 	deleteTask(originalTaskHash: ActionHash): Promise<ActionHash> {

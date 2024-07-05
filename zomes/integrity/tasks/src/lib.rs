@@ -2,7 +2,7 @@ pub mod task;
 use hdi::prelude::*;
 pub use task::*;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 #[serde(tag = "type")]
 #[hdk_entry_types]
 #[unit_enum(UnitEntryTypes)]

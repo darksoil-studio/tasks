@@ -51,7 +51,11 @@
 			import '@shoelace-style/shoelace/dist/themes/light.css';
 			import { LitElement, css, html } from 'lit';
 
+			import '../src/elements/create-task.ts';
+			import '../src/elements/task-detail.ts';
+			import '../src/elements/task-summary.ts';
 			import '../src/elements/tasks-context.ts';
+			import '../src/elements/tasks-for-assignee.ts';
 			import { TasksClient, TasksStore } from '../src/index.ts';
 
 			export class DemoApp extends SignalWatcher(LitElement) {
@@ -93,7 +97,25 @@
 				renderContent() {
 					return html`
 						<tasks-context .store=${this._tasksStore}>
-							<!-- TODO: add here the content of your application -->
+							<div class="column">
+								<create-task
+									@task-created=${e => {
+										this.taskHash = e.detail.taskHash;
+										this.requestUpdate();
+									}}
+								></create-task>
+								<tasks-for-assignee
+									.assignee=${this._tasksStore.client.client.myPubKey}
+								></tasks-for-assignee>
+							</div>
+							${this.taskHash
+								? html`
+										<div class="column">
+											<task-summary .taskHash=${this.taskHash}></task-summary>
+											<task-detail .taskHash=${this.taskHash}></task-detail>
+										</div>
+									`
+								: html``}
 						</tasks-context>
 					`;
 				}
