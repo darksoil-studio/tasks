@@ -55,7 +55,7 @@ test('create and update Task', async () => {
 		);
 
 		// Task is not ready: it's blocked by its dependency
-		await expect(() =>
+		await expect(async () =>
 			bob.store.client.updateTask(
 				originalDependentActionHash,
 				dependent.actionHash,

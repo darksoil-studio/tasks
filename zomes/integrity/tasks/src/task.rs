@@ -45,7 +45,7 @@ pub fn validate_status_from_dependencies(
                 return Ok(ValidateCallbackResult::Valid);
             } else {
                 return Ok(ValidateCallbackResult::Invalid(String::from(
-                    "Not all tasks are done yet: this task is not ready to be done.",
+                    "Not all tasks are done yet: this task is not Ready.",
                 )));
             }
         }

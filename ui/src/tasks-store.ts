@@ -57,6 +57,7 @@ function deriveNewStatus(
 	dependencies: Array<TaskDependency>,
 ): TaskStatus | undefined {
 	const nonOptionalDeps = dependencies.filter(d => !d.optional);
+	if (nonOptionalDeps.length === 0) return undefined;
 
 	if (
 		currentStatus === 'Blocked' &&
@@ -66,7 +67,7 @@ function deriveNewStatus(
 
 	if (
 		(currentStatus === 'Ready' || currentStatus === 'InProgress') &&
-		dependencies.find(d => d.status !== 'Done')
+		!!nonOptionalDeps.find(d => d.status !== 'Done')
 	)
 		return 'Blocked';
 
@@ -116,7 +117,6 @@ export class TasksStore {
 				if (newStatus) {
 					if (!this.updatingTasks.get(taskHash)) {
 						this.updatingTasks.set(taskHash, true);
-
 						this.client
 							.updateTask(taskHash, latestVersion.value.actionHash, {
 								...latestVersion.value.entry,
@@ -124,6 +124,7 @@ export class TasksStore {
 									.original_create_hash
 									? latestVersion.value.entry.original_create_hash
 									: taskHash,
+								dependencies,
 								status: newStatus,
 							})
 							.finally(() => {
@@ -217,14 +218,14 @@ export class TasksStore {
 		}
 
 		const newStatus = deriveNewStatus(latestVersion.entry.status, dependencies);
-
 		if (newStatus) {
 			const newTask: Task = {
 				...latestVersion.entry,
 				original_create_hash: latestVersion.entry.original_create_hash
 					? latestVersion.entry.original_create_hash
-					: originalDependencyHash,
+					: originalDependentHash,
 				dependencies,
+				status: newStatus,
 			};
 			await this.client.updateTask(
 				originalDependencyHash,
