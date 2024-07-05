@@ -64,6 +64,7 @@ export class CreateTask extends SignalWatcher(LitElement) {
 	form!: HTMLFormElement;
 
 	async createTask(fields: Partial<Task>) {
+		const status = 'Ready';
 		const task: Task = {
 			original_create_hash: undefined,
 			name: fields.name!,
@@ -71,7 +72,7 @@ export class CreateTask extends SignalWatcher(LitElement) {
 			deadline: new Date(fields.deadline!).valueOf() * 1000,
 			assignee: fields.assignee!,
 			dependencies: [], // TODO: here
-			status: fields.status!,
+			status,
 		};
 
 		try {
@@ -124,13 +125,6 @@ export class CreateTask extends SignalWatcher(LitElement) {
 					.fieldLabel=${msg('Assignee')}
 					required
 				></search-agent>
-				<sl-select name="status" .label=${msg('Status')} required>
-					<sl-option value="Ready">${msg('Ready')}</sl-option>
-					<sl-option value="Blocked">${msg('Blocked')}</sl-option>
-					<sl-option value="InProgress">${msg('In Progress')}</sl-option>
-					<sl-option value="Done">${msg('Done')}</sl-option>
-					<sl-option value="Cancelled">${msg('Cancelled')}</sl-option>
-				</sl-select>
 
 				<sl-button variant="primary" type="submit" .loading=${this.committing}
 					>${msg('Create Task')}</sl-button
