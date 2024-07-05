@@ -1,0 +1,28 @@
+---
+manifest_version: "1"
+name: tasks_test
+integrity:
+  network_seed: ~
+  properties: ~
+  origin_time: 1676140846503210
+  zomes:
+    - name: tasks_integrity
+      hash: ~
+      bundled: "../target/wasm32-unknown-unknown/release/tasks_integrity.wasm"
+      dependencies: ~    
+    - name: profiles_integrity
+      hash: ~
+      bundled: <NIX PACKAGE>
+      dependencies: ~
+coordinator:
+  zomes:
+    - name: tasks
+      hash: ~
+      bundled: "../target/wasm32-unknown-unknown/release/tasks.wasm"
+      dependencies:
+        - name: tasks_integrity    
+    - name: profiles
+      hash: ~
+      bundled: <NIX PACKAGE>
+      dependencies:
+        - name: profiles_integrity
