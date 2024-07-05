@@ -98,6 +98,9 @@ importers:
 
   ui:
     dependencies:
+      '@darksoil-studio/notifications':
+        specifier: github:darksoil-studio/notifications#f121b9b526bc997c5cef72640b7fe29a4d77598e&path:ui
+        version: https://codeload.github.com/darksoil-studio/notifications/tar.gz/f121b9b526bc997c5cef72640b7fe29a4d77598e#path:ui(@types/react@18.3.3)
       '@holochain-open-dev/elements':
         specifier: ^0.300.0
         version: 0.300.0(@types/react@18.3.3)
@@ -318,6 +321,10 @@ packages:
 
   '@dabh/diagnostics@2.0.3':
     resolution: {integrity: sha512-hrlQOIi7hAfzsMqlGSFyVucrx38O+j6wiGOf//H2ecvIEqYN4ADBSS2iLMh5UFyDunCNniUIPk/q3riFv45xRA==}
+
+  '@darksoil-studio/notifications@https://codeload.github.com/darksoil-studio/notifications/tar.gz/f121b9b526bc997c5cef72640b7fe29a4d77598e#path:ui':
+    resolution: {path: ui, tarball: https://codeload.github.com/darksoil-studio/notifications/tar.gz/f121b9b526bc997c5cef72640b7fe29a4d77598e}
+    version: 0.1.0
 
   '@docsearch/css@3.6.0':
     resolution: {integrity: sha512-+sbxb71sWre+PwDK7X2T8+bhS6clcVMLwBPznX45Qu6opJcgRjAp7gYSDzVFp187J+feSj5dNBN1mJoi6ckkUQ==}
@@ -2970,6 +2977,24 @@ snapshots:
       colorspace: 1.1.4
       enabled: 2.0.0
       kuler: 2.0.0
+
+  '@darksoil-studio/notifications@https://codeload.github.com/darksoil-studio/notifications/tar.gz/f121b9b526bc997c5cef72640b7fe29a4d77598e#path:ui(@types/react@18.3.3)':
+    dependencies:
+      '@holochain-open-dev/elements': 0.300.0(@types/react@18.3.3)
+      '@holochain-open-dev/profiles': https://codeload.github.com/holochain-open-dev/profiles/tar.gz/748bb4879e247eff44a4a23a8d2aaa02a585578a#path:ui(@types/react@18.3.3)
+      '@holochain-open-dev/signals': 0.300.4(@types/react@18.3.3)
+      '@holochain-open-dev/utils': 0.300.1
+      '@holochain/client': 0.17.0
+      '@lit/context': 1.1.2
+      '@lit/localize': 0.12.1
+      '@mdi/js': 7.4.47
+      '@msgpack/msgpack': 2.8.0
+      '@shoelace-style/shoelace': 2.15.1(@types/react@18.3.3)
+      lit: 3.1.4
+    transitivePeerDependencies:
+      - '@types/react'
+      - bufferutil
+      - utf-8-validate
 
   '@docsearch/css@3.6.0': {}
 

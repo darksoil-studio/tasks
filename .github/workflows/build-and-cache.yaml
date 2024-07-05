@@ -24,7 +24,7 @@ jobs:
 
       - name: Install and test
         run: |
-          nix develop --command bash -c "pnpm i && pnpm t && pnpm -F @holochain-open-dev/tasks build"
+          nix develop --command bash -c "pnpm i && pnpm t && pnpm -F @darksoil-studio/tasks build"
 
       - name: Build zomes
         env:

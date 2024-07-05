@@ -1,4 +1,4 @@
-# @holochain-open-dev/tasks
+# @darksoil-studio/tasks
 
 This module follows the [holochain-open-dev](https://github.com/holochain-open-dev/) pattern of developing holochain modules. Read [its documentation](https://holochain-open-dev.github.io) to understand more about its motivation and the big picture.
 

@@ -3,7 +3,7 @@
 The `TasksStore` is a typescript class that contains [async signals](https://www.npmjs.com/package/async-signals), which you can watch to get reactive updates in your elements.
 
 ```js
-import { TasksStore, TasksClient } from "@holochain-open-dev/tasks";
+import { TasksStore, TasksClient } from "@darksoil-studio/tasks";
 const store = new TasksStore(new TasksClient(appClient, 'my-role-name'));
 ```
 

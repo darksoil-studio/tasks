@@ -1,21 +1,35 @@
-import { 
-  collectionSignal, 
-  liveLinksSignal, 
-  deletedLinksSignal, 
-  allRevisionsOfEntrySignal,
-  latestVersionOfEntrySignal, 
-  immutableEntrySignal, 
-  deletesForEntrySignal, 
-  AsyncComputed,
-  pipe,
-} from "@holochain-open-dev/signals";
-import { slice, HashType, retype, EntryRecord, LazyHoloHashMap } from "@holochain-open-dev/utils";
-import { NewEntryAction, Record, ActionHash, EntryHash, AgentPubKey } from '@holochain/client';
+import { NotificationsStore } from '@darksoil-studio/notifications';
+import {
+	AsyncComputed,
+	allRevisionsOfEntrySignal,
+	collectionSignal,
+	deletedLinksSignal,
+	deletesForEntrySignal,
+	immutableEntrySignal,
+	latestVersionOfEntrySignal,
+	liveLinksSignal,
+	pipe,
+} from '@holochain-open-dev/signals';
+import {
+	EntryRecord,
+	HashType,
+	LazyHoloHashMap,
+	retype,
+	slice,
+} from '@holochain-open-dev/utils';
+import {
+	ActionHash,
+	AgentPubKey,
+	EntryHash,
+	NewEntryAction,
+	Record,
+} from '@holochain/client';
 
 import { TasksClient } from './tasks-client.js';
 
 export class TasksStore {
-
-  constructor(public client: TasksClient) {}
-  
+	constructor(
+		public client: TasksClient,
+		public notificationsStore: NotificationsStore,
+	) {}
 }

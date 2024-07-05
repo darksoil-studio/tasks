@@ -3,7 +3,7 @@
 layout: home
 
 hero:
-  name: "@holochain-open-dev/tasks"
+  name: "@darksoil-studio/tasks"
   text: "Tasks zome for holochain apps"
   tagline: Plug-and-play tasks management for your hApps
   actions:

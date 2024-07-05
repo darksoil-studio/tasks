@@ -1,28 +1,42 @@
----
-manifest_version: "1"
+manifest_version: '1'
 name: tasks_test
 integrity:
-  network_seed: ~
-  properties: ~
+  network_seed: null
+  properties: null
   origin_time: 1676140846503210
   zomes:
-    - name: tasks_integrity
-      hash: ~
-      bundled: "../target/wasm32-unknown-unknown/release/tasks_integrity.wasm"
-      dependencies: ~    
-    - name: profiles_integrity
-      hash: ~
-      bundled: <NIX PACKAGE>
-      dependencies: ~
+  - name: tasks_integrity
+    hash: null
+    bundled: ../target/wasm32-unknown-unknown/release/tasks_integrity.wasm
+    dependencies: null
+    dylib: null
+  - name: profiles_integrity
+    hash: null
+    bundled: <NIX PACKAGE>
+    dependencies: null
+    dylib: null
+  - name: notifications_integrity
+    hash: null
+    bundled: <NIX_PACKAGE>
+    dependencies: null
+    dylib: null
 coordinator:
   zomes:
-    - name: tasks
-      hash: ~
-      bundled: "../target/wasm32-unknown-unknown/release/tasks.wasm"
-      dependencies:
-        - name: tasks_integrity    
-    - name: profiles
-      hash: ~
-      bundled: <NIX PACKAGE>
-      dependencies:
-        - name: profiles_integrity
+  - name: tasks
+    hash: null
+    bundled: ../target/wasm32-unknown-unknown/release/tasks.wasm
+    dependencies:
+    - name: tasks_integrity
+    dylib: null
+  - name: profiles
+    hash: null
+    bundled: <NIX PACKAGE>
+    dependencies:
+    - name: profiles_integrity
+    dylib: null
+  - name: notifications
+    hash: null
+    bundled: <NIX_PACKAGE>
+    dependencies:
+    - name: notifications_integrity
+    dylib: null
