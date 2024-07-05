@@ -75,7 +75,7 @@ function deriveNewStatus(
 }
 
 export class TasksStore {
-	private updatingTasks = new HoloHashMap<HoloHash, boolean>();
+  private updatingTasks = new HoloHashMap<HoloHash, boolean>();
 	constructor(
 		public client: TasksClient,
 		public notificationsStore?: NotificationsStore,
@@ -300,4 +300,15 @@ export class TasksStore {
 	}));
 
 	myTasks = this.tasksForAssignee.get(this.client.client.myPubKey);
+  
+  /** Unfinished Tasks */
+
+  unfinishedTasks = pipe(
+    collectionSignal(
+      this.client, 
+      () => this.client.getUnfinishedTasks(),
+      'UnfinishedTasks'
+    ),
+    unfinishedTasks => slice(this.tasks, unfinishedTasks.map(l => l.target))
+  );
 }

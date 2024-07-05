@@ -35,7 +35,7 @@ import { TasksClient } from './tasks-client.js';
 import { Task } from './types.js';
 
 export class TasksZomeMock extends ZomeMock implements AppClient {
-	constructor(myPubKey?: AgentPubKey) {
+  constructor(myPubKey?: AgentPubKey) {
 		super('tasks_test', 'tasks', myPubKey);
 	}
 	/** Task */
@@ -199,6 +199,20 @@ export class TasksZomeMock extends ZomeMock implements AppClient {
 	): Promise<Array<Link>> {
 		return this.tasksForTask.get(taskHash) || [];
 	}
+  
+  async get_unfinished_tasks(): Promise<Array<Link>> {
+    const records: Record[] = Array.from(this.tasks.values()).map(r => r.revisions[r.revisions.length - 1]);
+    return Promise.all(records.map(async record => ({ 
+      target: record.signed_action.hashed.hash, 
+      author: record.signed_action.hashed.content.author,
+      timestamp: record.signed_action.hashed.content.timestamp,
+      zome_index: 0,
+      link_type: 0,
+      tag: new Uint8Array(),
+      create_link_hash: await fakeActionHash()
+    })));
+  }
+
 }
 
 export async function sampleTask(
@@ -218,3 +232,4 @@ export async function sampleTask(
 		...partialTask,
 	};
 }
+

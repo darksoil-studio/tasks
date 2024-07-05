@@ -1,7 +1,9 @@
+use crate::{
+    unfinished_tasks::{add_to_unfinished, is_finished, remove_from_unfinished},
+    utils::{create_link_relaxed, delete_link_relaxed, update_relaxed},
+};
 use hdk::prelude::*;
 use tasks_integrity::*;
-
-use crate::utils::{create_link_relaxed, delete_link_relaxed, update_relaxed};
 
 #[hdk_extern]
 pub fn create_task(task: Task) -> ExternResult<Record> {
@@ -23,6 +25,7 @@ pub fn create_task(task: Task) -> ExternResult<Record> {
     let record = get(task_hash.clone(), GetOptions::default())?.ok_or(wasm_error!(
         WasmErrorInner::Guest("Could not find the newly created Task".to_string())
     ))?;
+    add_to_unfinished(&task_hash)?;
     Ok(record)
 }
 
@@ -94,6 +97,7 @@ pub struct CreateUpdateLinkForTaskInput {
     pub original_task_hash: ActionHash,
     pub new_task_hash: ActionHash,
 }
+
 #[hdk_extern]
 pub fn create_update_link_for_task(input: CreateUpdateLinkForTaskInput) -> ExternResult<()> {
     create_link_relaxed(
@@ -111,6 +115,7 @@ pub struct UpdateTaskInput {
     pub previous_task_hash: ActionHash,
     pub updated_task: Task,
 }
+
 #[hdk_extern]
 pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
     update_relaxed(
@@ -122,7 +127,6 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
             "Previous task not found",
         ))));
     };
-
     let previous_task: crate::Task = previous_task_record
         .entry()
         .to_app_option()
@@ -130,6 +134,16 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
         .ok_or(wasm_error!(WasmErrorInner::Guest(String::from(
             "Dependant action must be accompanied by an entry"
         ))))?;
+
+    let finished = is_finished(&input.updated_task);
+
+    if is_finished(&previous_task) != finished {
+        if finished {
+            remove_from_unfinished(&input.original_task_hash)?;
+        } else {
+            add_to_unfinished(&input.original_task_hash)?;
+        }
+    }
 
     let previous_dependencies: Vec<ActionHash> = previous_task
         .dependencies
@@ -142,7 +156,6 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
         .iter()
         .map(|d| d.original_revision_hash.clone())
         .collect();
-
     let removed_dependencies: Vec<TaskDependency> = previous_task
         .dependencies
         .into_iter()
@@ -154,7 +167,6 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
         .into_iter()
         .filter(|new_dep| !previous_dependencies.contains(&new_dep.original_revision_hash))
         .collect();
-
     for dependency in added_dependencies {
         create_link_relaxed(
             dependency.original_revision_hash,
@@ -163,7 +175,6 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
             dependency.last_revision_hash.into_inner(),
         )?;
     }
-
     for dependency in removed_dependencies {
         let links = get_links(
             GetLinksInputBuilder::try_new(
@@ -173,53 +184,10 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
             .tag_prefix(LinkTag::from(dependency.last_revision_hash.into_inner()))
             .build(),
         )?;
-
         for link in links {
             delete_link_relaxed(link.create_link_hash)?;
         }
     }
-
-    // if dependant_task_update_needed(previous_task.status, input.updated_task.status) {
-    //     let dependant_tasks = get_dependent_tasks_for_task(input.original_task_hash)?;
-    //     for link in dependant_tasks {
-    //         let original_task_hash =
-    //             link.target
-    //                 .into_action_hash()
-    //                 .ok_or(wasm_error!(WasmErrorInner::Guest(String::from(
-    //                     "Dependant task link does not have an ActionHash"
-    //                 ))))?;
-    //         let task_record = get_latest_task(original_task_hash)?.ok_or(wasm_error!(
-    //             WasmErrorInner::Guest(String::from("Could not find dependant task"))
-    //         ))?;
-    //         let dependant_task: crate::Task = task_record
-    //             .entry()
-    //             .to_app_option()
-    //             .map_err(|e| wasm_error!(e))?
-    //             .ok_or(wasm_error!(WasmErrorInner::Guest(String::from(
-    //                 "Dependant action must be accompanied by an entry"
-    //             ))))?;
-
-    //         for dependency in &mut dependant_task.dependencies {
-    //             if dependency
-    //                 .original_revision_hash
-    //                 .eq(&input.original_action_hash)
-    //             {
-    //                 dependency.last_revision_hash = task_hash;
-    //                 dependency.status = input.task.status;
-    //             }
-    //         }
-    //         if let Some(new_status) =
-    //             new_status_from_dependencies(dependant_task.status, dependant_task.dependencies)
-    //         {
-    //             dependant_task.status = new_status;
-    //             update_task(UpdateTaskInput {
-    //                 original_task_hash,
-    //                 previous_task_hash: task_record.action_address().clone(),
-    //                 updated_task: dependant_task,
-    //             })?;
-    //         }
-    //     }
-    // }
     Ok(())
 }
 
@@ -308,6 +276,7 @@ pub fn delete_task(original_task_hash: ActionHash) -> ExternResult<ActionHash> {
             }
         }
     }
+    remove_from_unfinished(&original_task_hash)?;
     delete_entry(original_task_hash)
 }
 

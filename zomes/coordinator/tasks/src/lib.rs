@@ -3,6 +3,7 @@ use task::CreateUpdateLinkForTaskInput;
 use tasks_integrity::*;
 
 pub mod task;
+pub mod unfinished_tasks;
 pub mod utils;
 
 #[hdk_extern]
