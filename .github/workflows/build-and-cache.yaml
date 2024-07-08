@@ -20,7 +20,7 @@ jobs:
 
       - uses: cachix/cachix-action@v14
         with:
-          name: holochain-open-dev
+          name: darksoil-studio
 
       - name: Install and test
         run: |
@@ -31,17 +31,17 @@ jobs:
           CACHIX_AUTH_TOKEN: "$"
         run: |
           nix build -L .#tasks_integrity
-          cachix push holochain-open-dev $(nix path-info --accept-flake-config .#tasks_integrity)
-          cachix pin holochain-open-dev tasks_integrity_debug $(nix path-info --accept-flake-config .#tasks_integrity)
+          cachix push darksoil-studio $(nix path-info --accept-flake-config .#tasks_integrity)
+          cachix pin darksoil-studio tasks_integrity_debug $(nix path-info --accept-flake-config .#tasks_integrity)
 
           nix build -L .#tasks_integrity.meta.release
-          cachix push holochain-open-dev $(nix path-info --accept-flake-config .#tasks_integrity)
-          cachix pin holochain-open-dev tasks_integrity $(nix path-info --accept-flake-config .#tasks_integrity.meta.release)
+          cachix push darksoil-studio $(nix path-info --accept-flake-config .#tasks_integrity)
+          cachix pin darksoil-studio tasks_integrity $(nix path-info --accept-flake-config .#tasks_integrity.meta.release)
 
           nix build -L .#tasks
-          cachix push holochain-open-dev $(nix path-info --accept-flake-config .#tasks)
-          cachix pin holochain-open-dev tasks_debug $(nix path-info --accept-flake-config .#tasks)
+          cachix push darksoil-studio $(nix path-info --accept-flake-config .#tasks)
+          cachix pin darksoil-studio tasks_debug $(nix path-info --accept-flake-config .#tasks)
 
           nix build -L .#tasks.meta.release
-          cachix push holochain-open-dev $(nix path-info --accept-flake-config .#tasks.meta.release)
-          cachix pin holochain-open-dev tasks $(nix path-info --accept-flake-config .#tasks.meta.release)
+          cachix push darksoil-studio $(nix path-info --accept-flake-config .#tasks.meta.release)
+          cachix pin darksoil-studio tasks $(nix path-info --accept-flake-config .#tasks.meta.release)

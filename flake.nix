@@ -58,7 +58,7 @@
               --add-flags "tasks \
                 --integrity-zome-name tasks_integrity \
                 --coordinator-zome-name tasks \
-                --remote-zome-git-url github:holochain-open-dev/tasks \
+                --remote-zome-git-url github:darksoil-studio/tasks \
                 --remote-npm-package-name tasks \
                 --remote-npm-package-path ui \
                 --remote-zome-git-branch main" 
