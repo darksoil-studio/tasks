@@ -78,7 +78,7 @@ export class EditTask extends SignalWatcher(LitElement) {
 
 		try {
 			this.committing = true;
-			const updateRecord = await this.tasksStore.client.updateTask(
+			await this.tasksStore.client.updateTask(
 				this.taskHash,
 				currentRecord.actionHash,
 				task,
@@ -88,11 +88,11 @@ export class EditTask extends SignalWatcher(LitElement) {
 				new CustomEvent('task-updated', {
 					composed: true,
 					bubbles: true,
-					detail: {
-						originalTaskHash: this.taskHash,
-						previousTaskHash: currentRecord.actionHash,
-						updatedTaskHash: updateRecord.actionHash,
-					},
+					// detail: {
+					// 	originalTaskHash: this.taskHash,
+					// 	previousTaskHash: currentRecord.actionHash,
+					// 	updatedTaskHash: updateRecord.actionHash,
+					// },
 				}),
 			);
 		} catch (e: unknown) {

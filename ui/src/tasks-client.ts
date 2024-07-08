@@ -16,7 +16,7 @@ import { Task } from './types.js';
 import { TasksSignal } from './types.js';
 
 export class TasksClient extends ZomeClient<TasksSignal> {
-  constructor(
+	constructor(
 		public client: AppClient,
 		public roleName: string,
 		public zomeName = 'tasks',
@@ -106,10 +106,9 @@ export class TasksClient extends ZomeClient<TasksSignal> {
 		return this.callZome('get_deleted_dependent_tasks_for_task', taskHash);
 	}
 
-  /** Unfinished Tasks */
+	/** Unfinished Tasks */
 
-  async getUnfinishedTasks(): Promise<Array<Link>> {
-    return this.callZome('get_unfinished_tasks', undefined);
-  }
-
+	async getUnfinishedTasks(): Promise<Array<Link>> {
+		return this.callZome('get_unfinished_tasks', undefined);
+	}
 }

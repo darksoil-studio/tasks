@@ -4,12 +4,12 @@ import { Signal } from '@holochain-open-dev/signals';
 // This function would usually live in a library/framework, not application code
 let pending = false;
 
-let w = new Signal.subtle.Watcher(() => {
+const w = new Signal.subtle.Watcher(() => {
 	if (!pending) {
 		pending = true;
 		queueMicrotask(() => {
 			pending = false;
-			for (let s of w.getPending()) s.get();
+			for (const s of w.getPending()) s.get();
 			w.watch();
 		});
 	}
@@ -18,13 +18,13 @@ let w = new Signal.subtle.Watcher(() => {
 // TODO: why do we need to use this complicated effect method?
 // An effect effect Signal which evaluates to cb, which schedules a read of
 // itself on the microtask queue whenever one of its dependencies might change
-export function effect(cb: any) {
-	let destructor: any;
-	let c = new Signal.Computed(() => {
+export function effect(cb: () => unknown) {
+	let destructor: () => void | unknown;
+	const c = new Signal.Computed(() => {
 		if (typeof destructor === 'function') {
 			destructor();
 		}
-		destructor = cb();
+		destructor = cb() as () => void | unknown;
 	});
 	w.watch(c);
 	c.get();

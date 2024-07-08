@@ -26,8 +26,6 @@ pub fn update_relaxed(
     entry_type: EntryTypes,
 ) -> ExternResult<()> {
     HDK.with(|h| {
-        let index = ScopedEntryDefIndex::try_from(&entry_type)?;
-        let vis = EntryVisibility::from(&entry_type);
         let entry = Entry::try_from(entry_type)?;
 
         h.borrow().update(UpdateInput {

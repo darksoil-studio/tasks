@@ -311,6 +311,15 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "get_unfinished_tasks",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<Link>>"
+                }
+              }
             }
           ],
           "superclass": {
@@ -445,7 +454,7 @@
               "name": "updateTask",
               "return": {
                 "type": {
-                  "text": "Promise<EntryRecord<Task>>"
+                  "text": "Promise<void>"
                 }
               },
               "parameters": [
@@ -587,6 +596,16 @@
                   }
                 }
               ]
+            },
+            {
+              "kind": "method",
+              "name": "getUnfinishedTasks",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<Link>>"
+                }
+              },
+              "description": "Unfinished Tasks"
             }
           ],
           "superclass": {
@@ -617,6 +636,43 @@
           "members": [
             {
               "kind": "field",
+              "name": "updatingTasks",
+              "privacy": "private",
+              "default": "new HoloHashMap<HoloHash, boolean>()"
+            },
+            {
+              "kind": "method",
+              "name": "updateDependentTaskIfNecessary",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "originalDependencyHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                },
+                {
+                  "name": "latestDependencyHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                },
+                {
+                  "name": "newDependencyStatus",
+                  "type": {
+                    "text": "TaskStatus"
+                  }
+                },
+                {
+                  "name": "originalDependentHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
               "name": "tasks",
               "default": "new LazyHoloHashMap((taskHash: ActionHash) => ({\n\t\tlatestVersion: latestVersionOfEntrySignal(this.client, () =>\n\t\t\tthis.client.getLatestTask(taskHash),\n\t\t),\n\t\toriginal: immutableEntrySignal(() => this.client.getOriginalTask(taskHash)),\n\t\tallRevisions: allRevisionsOfEntrySignal(this.client, () =>\n\t\t\tthis.client.getAllRevisionsForTask(taskHash),\n\t\t),\n\t\tdeletes: deletesForEntrySignal(this.client, taskHash, () =>\n\t\t\tthis.client.getAllDeletesForTask(taskHash),\n\t\t),\n\t\tdependentTasks: {\n\t\t\tlive: mapCompleted(\n\t\t\t\tliveLinksSignal(\n\t\t\t\t\tthis.client,\n\t\t\t\t\ttaskHash,\n\t\t\t\t\t() => this.client.getDependentTasksForTask(taskHash),\n\t\t\t\t\t'Dependency',\n\t\t\t\t),\n\t\t\t\tlinks => links.map(l => l.target),\n\t\t\t),\n\t\t\tdeleted: mapCompleted(\n\t\t\t\tdeletedLinksSignal(\n\t\t\t\t\tthis.client,\n\t\t\t\t\ttaskHash,\n\t\t\t\t\t() => this.client.getDeletedDependentTasksForTask(taskHash),\n\t\t\t\t\t'Dependency',\n\t\t\t\t),\n\t\t\t\tlinks => links.map(l => l[0].hashed.content.target_address),\n\t\t\t),\n\t\t},\n\t}))",
               "description": "Task"
@@ -624,11 +680,16 @@
             {
               "kind": "field",
               "name": "tasksForAssignee",
-              "default": "new LazyHoloHashMap((assignee: AgentPubKey) => ({\n\t\tlive: pipe(\n\t\t\tliveLinksSignal(\n\t\t\t\tthis.client,\n\t\t\t\tassignee,\n\t\t\t\t() => this.client.getTasksForAssignee(assignee),\n\t\t\t\t'AssigneeToTasks',\n\t\t\t),\n\t\t\tlinks =>\n\t\t\t\tslice(\n\t\t\t\t\tthis.tasks,\n\t\t\t\t\tlinks.map(l => l.target),\n\t\t\t\t),\n\t\t),\n\t\tdeleted: pipe(\n\t\t\tdeletedLinksSignal(\n\t\t\t\tthis.client,\n\t\t\t\tassignee,\n\t\t\t\t() => this.client.getDeletedTasksForAssignee(assignee),\n\t\t\t\t'AssigneeToTasks',\n\t\t\t),\n\t\t\tlinks =>\n\t\t\t\tslice(\n\t\t\t\t\tthis.tasks,\n\t\t\t\t\tlinks.map(l => l[0].hashed.content.target_address),\n\t\t\t\t),\n\t\t),\n\t}))"
+              "default": "new LazyHoloHashMap((assignee: AgentPubKey) => ({\n\t\tlive: mapCompleted(\n\t\t\tliveLinksSignal(\n\t\t\t\tthis.client,\n\t\t\t\tassignee,\n\t\t\t\t() => this.client.getTasksForAssignee(assignee),\n\t\t\t\t'AssigneeToTasks',\n\t\t\t),\n\t\t\tlinks =>\n\t\t\t\tslice(\n\t\t\t\t\tthis.tasks,\n\t\t\t\t\tlinks.map(l => l.target),\n\t\t\t\t),\n\t\t),\n\t\tdeleted: mapCompleted(\n\t\t\tdeletedLinksSignal(\n\t\t\t\tthis.client,\n\t\t\t\tassignee,\n\t\t\t\t() => this.client.getDeletedTasksForAssignee(assignee),\n\t\t\t\t'AssigneeToTasks',\n\t\t\t),\n\t\t\tlinks =>\n\t\t\t\tslice(\n\t\t\t\t\tthis.tasks,\n\t\t\t\t\tlinks.map(l => l[0].hashed.content.target_address),\n\t\t\t\t),\n\t\t),\n\t}))"
             },
             {
               "kind": "field",
               "name": "myTasks"
+            },
+            {
+              "kind": "field",
+              "name": "unfinishedTasks",
+              "description": "Unfinished Tasks"
             }
           ]
         }
@@ -661,7 +722,25 @@
             {
               "name": "cb",
               "type": {
-                "text": "any"
+                "text": "() => unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "waitUntil",
+          "parameters": [
+            {
+              "name": "condition",
+              "type": {
+                "text": "() => Promise<boolean>"
+              }
+            },
+            {
+              "name": "timeout",
+              "type": {
+                "text": "number"
               }
             }
           ]
@@ -673,6 +752,14 @@
           "name": "effect",
           "declaration": {
             "name": "effect",
+            "module": "src/utils.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "waitUntil",
+          "declaration": {
+            "name": "waitUntil",
             "module": "src/utils.ts"
           }
         }
@@ -1048,19 +1135,9 @@
                   }
                 }
               ]
-            },
-            {
-              "kind": "method",
-              "name": "renderTask"
             }
           ],
           "events": [
-            {
-              "name": "task-selected",
-              "type": {
-                "text": "CustomEvent"
-              }
-            },
             {
               "description": "detail will contain { taskHash }",
               "name": "task-selected:"
@@ -1233,6 +1310,61 @@
           "declaration": {
             "name": "TasksForAssignee",
             "module": "src/elements/tasks-for-assignee.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/unfinished-tasks.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "UnfinishedTasks",
+          "members": [
+            {
+              "kind": "method",
+              "name": "renderList",
+              "parameters": [
+                {
+                  "name": "hashes",
+                  "type": {
+                    "text": "Array<ActionHash>"
+                  }
+                }
+              ]
+            }
+          ],
+          "mixins": [
+            {
+              "name": "SignalWatcher",
+              "package": "@holochain-open-dev/signals"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "unfinished-tasks",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UnfinishedTasks",
+          "declaration": {
+            "name": "UnfinishedTasks",
+            "module": "src/elements/unfinished-tasks.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "unfinished-tasks",
+          "declaration": {
+            "name": "UnfinishedTasks",
+            "module": "src/elements/unfinished-tasks.ts"
           }
         }
       ]
