@@ -8,12 +8,14 @@ use tasks_integrity::*;
 #[hdk_extern]
 pub fn create_task(task: Task) -> ExternResult<Record> {
     let task_hash = create_entry(&EntryTypes::Task(task.clone()))?;
-    create_link(
-        task.assignee.clone(),
-        task_hash.clone(),
-        LinkTypes::AssigneeToTasks,
-        (),
-    )?;
+    if let Some(assignee) = task.assignee {
+        create_link(
+            assignee.clone(),
+            task_hash.clone(),
+            LinkTypes::AssigneeToTasks,
+            (),
+        )?;
+    }
     for dependency in task.dependencies.clone() {
         create_link(
             dependency.original_revision_hash,
@@ -122,7 +124,8 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
         input.previous_task_hash.clone(),
         EntryTypes::Task(input.updated_task.clone()),
     )?;
-    let Some(previous_task_record) = get(input.previous_task_hash, GetOptions::default())? else {
+    let Some(previous_task_record) = get(input.previous_task_hash.clone(), GetOptions::default())?
+    else {
         return Err(wasm_error!(WasmErrorInner::Guest(String::from(
             "Previous task not found",
         ))));
@@ -142,6 +145,30 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
             remove_from_unfinished(&input.original_task_hash)?;
         } else {
             add_to_unfinished(&input.original_task_hash)?;
+        }
+    }
+
+    if previous_task.assignee.ne(&input.updated_task.assignee) {
+        if let Some(previous_assignee) = previous_task.assignee.clone() {
+            let links = get_links(
+                GetLinksInputBuilder::try_new(previous_assignee, LinkTypes::AssigneeToTasks)?
+                    .build(),
+            )?;
+            for link in links {
+                if let Some(action_hash) = link.target.into_action_hash() {
+                    if action_hash.eq(&input.previous_task_hash) {
+                        delete_link_relaxed(link.create_link_hash)?;
+                    }
+                }
+            }
+        }
+        if let Some(new_assignee) = input.updated_task.assignee {
+            create_link_relaxed(
+                new_assignee.clone(),
+                input.original_task_hash.clone(),
+                LinkTypes::AssigneeToTasks,
+                (),
+            )?;
         }
     }
 
@@ -250,13 +277,15 @@ pub fn delete_task(original_task_hash: ActionHash) -> ExternResult<ActionHash> {
             "Task record has no entry".to_string()
         )))?;
     let task = <Task>::try_from(entry)?;
-    let links = get_links(
-        GetLinksInputBuilder::try_new(task.assignee.clone(), LinkTypes::AssigneeToTasks)?.build(),
-    )?;
-    for link in links {
-        if let Some(action_hash) = link.target.into_action_hash() {
-            if action_hash == original_task_hash {
-                delete_link(link.create_link_hash)?;
+    if let Some(assignee) = task.assignee {
+        let links = get_links(
+            GetLinksInputBuilder::try_new(assignee.clone(), LinkTypes::AssigneeToTasks)?.build(),
+        )?;
+        for link in links {
+            if let Some(action_hash) = link.target.into_action_hash() {
+                if action_hash == original_task_hash {
+                    delete_link(link.create_link_hash)?;
+                }
             }
         }
     }

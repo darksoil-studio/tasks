@@ -6,9 +6,9 @@ import { EntryRecord } from '@holochain-open-dev/utils';
 import { ActionHash, EntryHash, Record } from '@holochain/client';
 import { consume } from '@lit/context';
 import { localized, msg } from '@lit/localize';
-import '@shoelace-style/shoelace/dist/components/card/card.js';
 import '@shoelace-style/shoelace/dist/components/format-date/format-date.js';
 import '@shoelace-style/shoelace/dist/components/spinner/spinner.js';
+import '@shoelace-style/shoelace/dist/components/tag/tag.js';
 import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 
@@ -37,60 +37,37 @@ export class TaskSummary extends SignalWatcher(LitElement) {
 
 	renderSummary(entryRecord: EntryRecord<Task>) {
 		return html`
-			<div class="column" style="gap: 16px;">
-				<div class="column" style="gap: 8px">
-					<span><strong>${msg('Name')}</strong></span>
-					<span style="white-space: pre-line">${entryRecord.entry.name}</span>
-				</div>
+			<div class="row" style="gap: 16px; align-items: center">
+				<span style="white-space: pre-line">${entryRecord.entry.name}</span>
 
-				<div class="column" style="gap: 8px">
-					<span><strong>${msg('Description')}</strong></span>
-					<span style="white-space: pre-line"
-						>${entryRecord.entry.description}</span
-					>
-				</div>
+				${entryRecord.entry.deadline
+					? html`
+							<sl-format-date
+								.date=${new Date(entryRecord.entry.deadline / 1000)}
+							></sl-format-date>
+						`
+					: html``}
 
-				<div class="column" style="gap: 8px">
-					<span><strong>${msg('Deadline')}</strong></span>
-					<span style="white-space: pre-line"
-						>${entryRecord.entry.deadline
-							? html`
-									<sl-format-date
-										.date=${new Date(entryRecord.entry.deadline / 1000)}
-									></sl-format-date>
-								`
-							: html`<span>${msg('No deadline')}</span>`}
-					</span>
-				</div>
+				<agent-avatar .agentPubKey=${entryRecord.entry.assignee}></agent-avatar>
 
-				<div class="column" style="gap: 8px">
-					<span><strong>${msg('Assignee')}</strong></span>
-					<span style="white-space: pre-line"
-						><agent-avatar
-							.agentPubKey=${entryRecord.entry.assignee}
-						></agent-avatar
-					></span>
-				</div>
+				<span style="flex: 1"></span>
 
-				<div class="column" style="gap: 8px">
-					<span><strong>${msg('Status')}</strong></span>
-					<span style="white-space: pre-line"
-						>${entryRecord.entry.status === 'Ready'
-							? msg('Ready')
-							: entryRecord.entry.status === 'Blocked'
-								? msg('Blocked')
-								: entryRecord.entry.status === 'InProgress'
-									? msg('In Progress')
-									: entryRecord.entry.status === 'Done'
-										? msg('Done')
-										: msg('Cancelled')}</span
-					>
-				</div>
+				<sl-tag style="white-space: pre-line"
+					>${entryRecord.entry.status === 'Ready'
+						? msg('Ready')
+						: entryRecord.entry.status === 'Blocked'
+							? msg('Blocked')
+							: entryRecord.entry.status === 'InProgress'
+								? msg('In Progress')
+								: entryRecord.entry.status === 'Done'
+									? msg('Done')
+									: msg('Cancelled')}</sl-tag
+				>
 			</div>
 		`;
 	}
 
-	renderTask() {
+	render() {
 		const task = this.tasksStore.tasks.get(this.taskHash).latestVersion.get();
 
 		switch (task.status) {
@@ -110,23 +87,23 @@ export class TaskSummary extends SignalWatcher(LitElement) {
 		}
 	}
 
-	render() {
-		return html`<sl-card
-			style="flex: 1; cursor: grab;"
-			@click=${() =>
-				this.dispatchEvent(
-					new CustomEvent('task-selected', {
-						composed: true,
-						bubbles: true,
-						detail: {
-							taskHash: this.taskHash,
-						},
-					}),
-				)}
-		>
-			${this.renderTask()}
-		</sl-card>`;
-	}
+	// render() {
+	// 	return html`<div
+	// 		style="flex: 1; cursor: grab;"
+	// 		@click=${() =>
+	// 			this.dispatchEvent(
+	// 				new CustomEvent('task-selected', {
+	// 					composed: true,
+	// 					bubbles: true,
+	// 					detail: {
+	// 						taskHash: this.taskHash,
+	// 					},
+	// 				}),
+	// 			)}
+	// 	>
+	// 		${this.renderTask()}
+	// 	</div>`;
+	// }
 
 	static styles = [sharedStyles];
 }

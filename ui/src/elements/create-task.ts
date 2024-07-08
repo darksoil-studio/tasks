@@ -69,7 +69,9 @@ export class CreateTask extends SignalWatcher(LitElement) {
 			original_create_hash: undefined,
 			name: fields.name!,
 			description: fields.description!,
-			deadline: new Date(fields.deadline!).valueOf() * 1000,
+			deadline: fields.deadline
+				? new Date(fields.deadline!).valueOf() * 1000
+				: undefined,
 			assignee: fields.assignee!,
 			dependencies: [], // TODO: here
 			status,
@@ -123,7 +125,6 @@ export class CreateTask extends SignalWatcher(LitElement) {
 				<search-agent
 					name="assignee"
 					.fieldLabel=${msg('Assignee')}
-					required
 				></search-agent>
 
 				<sl-button variant="primary" type="submit" .loading=${this.committing}

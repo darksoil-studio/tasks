@@ -1,17 +1,5 @@
 import { ActionCommittedSignal } from '@holochain-open-dev/utils';
-import {
-	ActionHash,
-	AgentPubKey,
-	Create,
-	CreateLink,
-	Delete,
-	DeleteLink,
-	DnaHash,
-	EntryHash,
-	Record,
-	SignedActionHashed,
-	Update,
-} from '@holochain/client';
+import { ActionHash, AgentPubKey } from '@holochain/client';
 
 export type TasksSignal = ActionCommittedSignal<EntryTypes, LinkTypes>;
 
@@ -42,7 +30,7 @@ export interface Task {
 
 	deadline: number | undefined;
 
-	assignee: AgentPubKey;
+	assignee: AgentPubKey | undefined;
 
 	dependencies: Array<TaskDependency>;
 

@@ -140,7 +140,6 @@ export class EditTask extends SignalWatcher(LitElement) {
 				<search-agent
 					name="assignee"
 					.fieldLabel=${msg('Assignee')}
-					required
 					.defaultValue=${currentRecord.entry.assignee}
 				></search-agent>
 
