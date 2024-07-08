@@ -7,6 +7,7 @@ import {
 	deletesForEntrySignal,
 	immutableEntrySignal,
 	joinAsync,
+	joinAsyncMap,
 	latestVersionOfEntrySignal,
 	liveLinksSignal,
 	mapCompleted,
@@ -18,6 +19,7 @@ import {
 	HashType,
 	HoloHashMap,
 	LazyHoloHashMap,
+	mapValues,
 	retype,
 	slice,
 } from '@holochain-open-dev/utils';
@@ -31,7 +33,14 @@ import {
 	Update,
 	encodeHashToBase64,
 } from '@holochain/client';
+import { encode } from '@msgpack/msgpack';
 
+import {
+	NOTIFICATIONS_TYPES,
+	TasksNotificationClickHandlers,
+	TasksNotificationsTypes,
+	notificationsTypes,
+} from './notifications.js';
 import { TasksClient } from './tasks-client.js';
 import { Task, TaskDependency, TaskStatus } from './types.js';
 import { effect, waitUntil } from './utils.js';
@@ -76,9 +85,11 @@ function deriveNewStatus(
 
 export class TasksStore {
 	private updatingTasks = new HoloHashMap<HoloHash, boolean>();
+
 	constructor(
 		public client: TasksClient,
 		public notificationsStore?: NotificationsStore,
+		public notificationsOnClickHandlers?: TasksNotificationClickHandlers,
 	) {
 		effect(() => {
 			const myTasks = this.myTasks.live.get();
@@ -162,38 +173,138 @@ export class TasksStore {
 							),
 						);
 					}
+
+					if (notificationsStore) {
+						if (
+							signal.app_entry.status === 'Cancelled' &&
+							signal.original_app_entry.status !== 'Cancelled'
+						) {
+							const task = this.tasks.get(originalCreateHash);
+							const dependentTasksHashes = await toPromise(
+								task.dependentTasks.live,
+							);
+
+							const notifyCancelled = async (dependentTaskHash: ActionHash) => {
+								const latestVersion = await toPromise(
+									this.tasks.get(dependentTaskHash).latestVersion,
+								);
+								if (
+									latestVersion.entry.assignee &&
+									encodeHashToBase64(latestVersion.entry.assignee) !==
+										encodeHashToBase64(this.client.client.myPubKey)
+								) {
+									await notificationsStore.client.createNotification({
+										content: encode({}),
+										notification_type:
+											NOTIFICATIONS_TYPES.DEPENDENCY_FOR_YOUR_TASK_WAS_CANCELLED,
+										persistent: false,
+										notification_group: encodeHashToBase64(dependentTaskHash),
+										recipients: [latestVersion.entry.assignee],
+									});
+								}
+							};
+
+							await Promise.all(
+								dependentTasksHashes.map(h => notifyCancelled(h)),
+							);
+						}
+
+						if (
+							signal.app_entry.assignee !== signal.original_app_entry.assignee
+						) {
+							// Assignee changed
+							if (
+								signal.original_app_entry.assignee &&
+								encodeHashToBase64(signal.original_app_entry.assignee) !==
+									encodeHashToBase64(this.client.client.myPubKey)
+							) {
+								await notificationsStore.client.createNotification({
+									content: encode({}),
+									notification_type: NOTIFICATIONS_TYPES.TASK_UNASSIGNED_TO_YOU,
+									notification_group: encodeHashToBase64(
+										signal.app_entry.original_create_hash!,
+									),
+									persistent: false,
+									recipients: [signal.original_app_entry.assignee],
+								});
+							}
+							if (
+								signal.app_entry.assignee &&
+								encodeHashToBase64(signal.app_entry.assignee) !==
+									encodeHashToBase64(this.client.client.myPubKey)
+							) {
+								await notificationsStore.client.createNotification({
+									content: encode({}),
+									notification_type: NOTIFICATIONS_TYPES.TASK_ASSIGNED_TO_YOU,
+									notification_group: encodeHashToBase64(
+										signal.app_entry.original_create_hash!,
+									),
+									persistent: false,
+									recipients: [signal.app_entry.assignee],
+								});
+							}
+
+							if (!signal.app_entry.assignee) {
+								const task = this.tasks.get(originalCreateHash);
+								const dependentTasksHashes = await toPromise(
+									task.dependentTasks.live,
+								);
+								const notifyDependents = async (
+									dependentTaskHash: ActionHash,
+								) => {
+									const latestVersion = await toPromise(
+										this.tasks.get(dependentTaskHash).latestVersion,
+									);
+									if (
+										latestVersion.entry.assignee &&
+										encodeHashToBase64(latestVersion.entry.assignee) !==
+											encodeHashToBase64(this.client.client.myPubKey)
+									) {
+										await notificationsStore.client.createNotification({
+											content: encode({}),
+											notification_type:
+												NOTIFICATIONS_TYPES.ASSIGNEE_REMOVED_FROM_YOUR_DEPENDENCIES,
+											persistent: false,
+											notification_group: encodeHashToBase64(dependentTaskHash),
+											recipients: [latestVersion.entry.assignee],
+										});
+									}
+
+									await Promise.all(
+										dependentTasksHashes.map(h => notifyDependents(h)),
+									);
+								};
+							}
+						}
+					}
 				}
 			}
-			// if (signal.type === 'LinkCreated') {
-			// 	if (signal.link_type === 'TaskUpdates') {
-			// 		const task = this.tasks.get(
-			// 			retype(signal.action.hashed.content.base_address, HashType.ACTION),
-			// 		);
-			// 		await waitUntil(async () => {
-			// 			const latestVersion = await toPromise(task.latestVersion);
-
-			// 			return (
-			// 				encodeHashToBase64(latestVersion.actionHash) ===
-			// 				encodeHashToBase64(
-			// 					retype(
-			// 						signal.action.hashed.content.target_address,
-			// 						HashType.ACTION,
-			// 					),
-			// 				)
-			// 			);
-			// 		}, 10_000);
-
-			// 		const latestVersion = await toPromise(task.latestVersion);
-			// 		const previousRevision = await this.client.getOriginalTask(
-			// 			(latestVersion.action as Update).original_action_address,
-			// 		);
-			// 		if (!previousRevision)
-			// 			throw new Error(
-			// 				'Could not find previous revision when we just updated it',
-			// 			);
-			// 	}
-			// }
+			if (signal.type === 'EntryCreated') {
+				if (notificationsStore) {
+					if (
+						signal.app_entry.assignee &&
+						encodeHashToBase64(signal.app_entry.assignee) !==
+							encodeHashToBase64(this.client.client.myPubKey)
+					) {
+						await notificationsStore.client.createNotification({
+							content: encode({}),
+							notification_type: NOTIFICATIONS_TYPES.TASK_ASSIGNED_TO_YOU,
+							notification_group: encodeHashToBase64(
+								signal.action.hashed.hash!,
+							),
+							persistent: false,
+							recipients: [signal.app_entry.assignee],
+						});
+					}
+				}
+			}
 		});
+
+		if (notificationsStore) {
+			notificationsStore.addTypes(
+				notificationsTypes(this, notificationsOnClickHandlers),
+			);
+		}
 	}
 
 	private async updateDependentTaskIfNecessary(
@@ -232,6 +343,26 @@ export class TasksStore {
 				latestVersion.actionHash,
 				newTask,
 			);
+
+			if (
+				this.notificationsStore &&
+				newTask.assignee &&
+				encodeHashToBase64(newTask.assignee) !==
+					encodeHashToBase64(this.client.client.myPubKey)
+			) {
+				if (
+					latestVersion.entry.status === 'Blocked' &&
+					newStatus !== 'Blocked'
+				) {
+					await this.notificationsStore.client.createNotification({
+						notification_group: encodeHashToBase64(originalDependentHash),
+						notification_type: NOTIFICATIONS_TYPES.TASK_UNBLOCKED,
+						content: encode({}),
+						persistent: false,
+						recipients: [newTask.assignee],
+					});
+				}
+			}
 		}
 	}
 
