@@ -28,7 +28,7 @@ jobs:
 
       - name: Build zomes
         env:
-          CACHIX_AUTH_TOKEN: "$"
+          CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
           nix build -L .#tasks_integrity
           cachix push darksoil-studio $(nix path-info --accept-flake-config .#tasks_integrity)
