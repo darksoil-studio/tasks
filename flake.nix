@@ -55,7 +55,7 @@
           buildInputs = [ pkgs.makeWrapper ];
           postBuild = ''
             wrapProgram $out/bin/scaffold-remote-zome \
-              --add-flags "tasks \
+              --add-flags "@darksoil-studio/tasks \
                 --integrity-zome-name tasks_integrity \
                 --coordinator-zome-name tasks \
                 --remote-zome-git-url github:darksoil-studio/tasks \
