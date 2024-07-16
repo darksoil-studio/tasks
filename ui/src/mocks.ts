@@ -66,6 +66,7 @@ export class TasksZomeMock extends ZomeMock implements AppClient {
 			this.tasksForAssignee.set(task.assignee, [
 				...existingAssignee,
 				{
+					base: task.assignee,
 					target: record.signed_action.hashed.hash,
 					author: this.myPubKey,
 					timestamp: Date.now() * 1000,
@@ -83,6 +84,7 @@ export class TasksZomeMock extends ZomeMock implements AppClient {
 				this.tasksForTask.set(dependencies.original_revision_hash, [
 					...existingDependencies,
 					{
+						base: dependencies.original_revision_hash,
 						target: record.signed_action.hashed.hash,
 						author: this.myPubKey,
 						timestamp: Date.now() * 1000,
@@ -161,6 +163,7 @@ export class TasksZomeMock extends ZomeMock implements AppClient {
 			this.tasksForAssignee.set(task.assignee, [
 				...existingAssignee,
 				{
+					base: task.assignee,
 					target: record.signed_action.hashed.hash,
 					author: record.signed_action.hashed.content.author,
 					timestamp: record.signed_action.hashed.content.timestamp,
@@ -178,6 +181,7 @@ export class TasksZomeMock extends ZomeMock implements AppClient {
 				this.tasksForTask.set(dependencies.original_revision_hash, [
 					...existingDependencies,
 					{
+						base: dependencies.original_revision_hash,
 						target: record.signed_action.hashed.hash,
 						author: record.signed_action.hashed.content.author,
 						timestamp: record.signed_action.hashed.content.timestamp,
@@ -207,8 +211,10 @@ export class TasksZomeMock extends ZomeMock implements AppClient {
 		const records: Record[] = Array.from(this.tasks.values()).map(
 			r => r.revisions[r.revisions.length - 1],
 		);
+		const base = await fakeEntryHash();
 		return Promise.all(
 			records.map(async record => ({
+				base,
 				target: record.signed_action.hashed.hash,
 				author: record.signed_action.hashed.content.author,
 				timestamp: record.signed_action.hashed.content.timestamp,

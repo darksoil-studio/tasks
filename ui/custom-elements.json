@@ -373,6 +373,62 @@
     },
     {
       "kind": "javascript-module",
+      "path": "src/notifications.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "NOTIFICATIONS_TYPES",
+          "type": {
+            "text": "{\n\tTASK_UNBLOCKED: 'tasks/task_unblocked',\n\tTASK_ASSIGNED_TO_YOU: 'tasks/task_assigned_to_you',\n\tTASK_UNASSIGNED_TO_YOU: 'tasks/task_unassigned_to_you',\n\tDEPENDENCY_FOR_YOUR_TASK_WAS_CANCELLED:\n\t\t'tasks/dependency_for_your_task_was_cancelled',\n\tASSIGNEE_REMOVED_FROM_YOUR_DEPENDENCIES:\n\t\t'tasks/assignee_removed_from_your_dependencies',\n}"
+          },
+          "default": "{\n\tTASK_UNBLOCKED: 'tasks/task_unblocked',\n\tTASK_ASSIGNED_TO_YOU: 'tasks/task_assigned_to_you',\n\tTASK_UNASSIGNED_TO_YOU: 'tasks/task_unassigned_to_you',\n\tDEPENDENCY_FOR_YOUR_TASK_WAS_CANCELLED:\n\t\t'tasks/dependency_for_your_task_was_cancelled',\n\tASSIGNEE_REMOVED_FROM_YOUR_DEPENDENCIES:\n\t\t'tasks/assignee_removed_from_your_dependencies',\n}"
+        },
+        {
+          "kind": "function",
+          "name": "notificationsTypes",
+          "return": {
+            "type": {
+              "text": "Record<TasksNotificationsTypes, NotificationType>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "tasksStore",
+              "type": {
+                "text": "TasksStore"
+              }
+            },
+            {
+              "name": "onClickHandlers",
+              "optional": true,
+              "type": {
+                "text": "TasksNotificationClickHandlers"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "NOTIFICATIONS_TYPES",
+          "declaration": {
+            "name": "NOTIFICATIONS_TYPES",
+            "module": "src/notifications.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "notificationsTypes",
+          "declaration": {
+            "name": "notificationsTypes",
+            "module": "src/notifications.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
       "path": "src/tasks-client.ts",
       "declarations": [
         {
