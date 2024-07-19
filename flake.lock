@@ -3544,11 +3544,11 @@
         "versions": "versions_7"
       },
       "locked": {
-        "lastModified": 1721404717,
-        "narHash": "sha256-PUHaX+K3lMkBpQkRxfaAxmu75rlUG8oys9E46sRZWIQ=",
+        "lastModified": 1721406854,
+        "narHash": "sha256-ID6bcHj0GkozzCa7otN+JifcGuTGhcjvDQcY3qzP3Fs=",
         "owner": "darksoil-studio",
         "repo": "notifications",
-        "rev": "bc5bd0e95c65eb6c9fc579c09303ec1691b3d7a0",
+        "rev": "d890486a8ff58bac48e87f5d60cfdcc669cb3145",
         "type": "github"
       },
       "original": {
