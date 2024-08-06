@@ -1,0 +1,12 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/chunks/api-docs.6GVAIKQB.js","assets/chunks/api-viewer-tabs.bc9mZ4w5.js","assets/chunks/tslib.es6.kHcLnhpD.js","assets/chunks/api-demo.Bsqmng5d.js","assets/chunks/profiles-context.BuH_RMZO.js","assets/chunks/tasks-client.qAG7b6b9.js","assets/chunks/provide.-X3GMMG4.js","assets/chunks/property.QJJZFMkB.js","assets/chunks/signal-watcher.DC_yjXfn.js","assets/chunks/tasks-context.D8BqHQfx.js","assets/chunks/context.CVKhpfoq.js","assets/chunks/tasks-for-assignee.BTjSvPrb.js","assets/chunks/agent-avatar.DHVeJeSD.js","assets/chunks/chunk.C2LF7HHG.DYJ60H94.js"])))=>i.map(i=>d[i]);
+import{y as p,X as s,o as k,c as r,a3 as d,j as g}from"./chunks/framework.D8cWuh-X.js";import{d as c,P as E,a as m,b as u,T as y,c as b,s as f,e as _,j as v,f as F}from"./chunks/tasks-client.qAG7b6b9.js";import{n as A,i as C}from"./chunks/static.DYJOwAbU.js";const D=d("",12),P=g("api-docs",{src:"custom-elements.json",only:"tasks-for-assignee"},null,-1),w=[D,P],R=JSON.parse('{"title":"<tasks-for-assignee>","description":"","frontmatter":{},"headers":[],"relativePath":"elements/tasks-for-assignee.md","filePath":"elements/tasks-for-assignee.md"}'),x={name:"elements/tasks-for-assignee.md"},S=Object.assign(x,{setup(B){return p(async()=>{await s(()=>import("./chunks/api-docs.6GVAIKQB.js"),__vite__mapDeps([0,1,2])),await s(()=>import("./chunks/api-demo.Bsqmng5d.js"),__vite__mapDeps([3,1,2])),await s(()=>import("./chunks/profiles-context.BuH_RMZO.js"),__vite__mapDeps([4,2,5,6,7,8])),customElements.get("tasks-context")||await s(()=>import("./chunks/tasks-context.D8BqHQfx.js"),__vite__mapDeps([9,6,7,5,10])),customElements.get("tasks-for-assignee")||await s(()=>import("./chunks/tasks-for-assignee.BTjSvPrb.js"),__vite__mapDeps([11,12,5,2,7,8,13,10]));const e=await c(),a=Array.from(e.keys())[0],l=new E(e,a),h=new m(new u(l,"tasks_test")),i=new y,t=new b(i,"tasks_test"),n=await f(t,{assignee:a});await i.create_task(n);const o=new _(t);v(A`
+    <profiles-context .store=${h}>
+      <tasks-context .store=${o}>
+        <api-demo src="custom-elements.json" only="tasks-for-assignee" exclude-knobs="store">
+          <template data-element="tasks-for-assignee" data-target="host">
+            <tasks-for-assignee assignee=${C(F(n.assignee))}" ></tasks-for-assignee>
+          </template>
+        </api-demo>
+      </tasks-context>
+    </profiles-context>
+  `,document.querySelector("element-demo"))}),(e,a)=>(k(),r("div",null,w))}});export{R as __pageData,S as default};
