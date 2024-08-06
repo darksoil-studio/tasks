@@ -22,6 +22,21 @@ import { fileURLToPath } from 'url';
 import { TasksClient } from '../../ui/src/tasks-client.js';
 import { TasksStore } from '../../ui/src/tasks-store.js';
 
+export function patchCallZome(appWs: AppWebsocket) {
+	const callZome = appWs.callZome;
+
+	appWs.callZome = async req => {
+		try {
+			const result = await callZome(req);
+			return result;
+		} catch (e) {
+			if (!e.toString().includes('Socket is not open')) {
+				throw e;
+			}
+		}
+	};
+}
+
 export async function setup(scenario: Scenario) {
 	const testHappUrl =
 		dirname(fileURLToPath(import.meta.url)) + '/../../workdir/tasks_test.happ';
@@ -44,6 +59,9 @@ export async function setup(scenario: Scenario) {
 	await bob.conductor
 		.adminWs()
 		.authorizeSigningCredentials(bob.cells[0].cell_id);
+
+	patchCallZome(alice.appWs as any);
+	patchCallZome(bob.appWs as any);
 
 	const aliceStore = new TasksStore(
 		new TasksClient(alice.appWs as any, 'tasks_test', 'tasks'),

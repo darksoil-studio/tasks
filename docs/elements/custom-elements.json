@@ -1,0 +1,1429 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "locales/locales.js",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "sourceLocale",
+          "default": "`en`",
+          "description": "The locale code that templates in this source code are written in."
+        },
+        {
+          "kind": "variable",
+          "name": "targetLocales",
+          "type": {
+            "text": "array"
+          },
+          "default": "[\n  ,\n]",
+          "description": "The other locale codes that this application is localized into. Sorted\nlexicographically."
+        },
+        {
+          "kind": "variable",
+          "name": "allLocales",
+          "type": {
+            "text": "array"
+          },
+          "default": "[\n  `en`,\n]",
+          "description": "All valid project locale codes. Sorted lexicographically."
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "sourceLocale",
+          "declaration": {
+            "name": "sourceLocale",
+            "module": "locales/locales.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "targetLocales",
+          "declaration": {
+            "name": "targetLocales",
+            "module": "locales/locales.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "allLocales",
+          "declaration": {
+            "name": "allLocales",
+            "module": "locales/locales.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/context.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "tasksStoreContext"
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "tasksStoreContext",
+          "declaration": {
+            "name": "tasksStoreContext",
+            "module": "src/context.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/index.ts",
+      "declarations": [],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "./tasks-store.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "./tasks-client.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "./context.js"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "*",
+          "declaration": {
+            "name": "*",
+            "package": "./types.js"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/mocks.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TasksZomeMock",
+          "members": [
+            {
+              "kind": "field",
+              "name": "tasks",
+              "default": "new HoloHashMap<\n\t\tActionHash,\n\t\t{\n\t\t\tdeletes: Array<SignedActionHashed<Delete>>;\n\t\t\trevisions: Array<Record>;\n\t\t}\n\t>()",
+              "description": "Task"
+            },
+            {
+              "kind": "field",
+              "name": "tasksForAssignee",
+              "default": "new HoloHashMap<ActionHash, Link[]>()"
+            },
+            {
+              "kind": "field",
+              "name": "tasksForTask",
+              "default": "new HoloHashMap<ActionHash, Link[]>()"
+            },
+            {
+              "kind": "method",
+              "name": "create_task",
+              "return": {
+                "type": {
+                  "text": "Promise<Record>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "task",
+                  "type": {
+                    "text": "Task"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "get_latest_task",
+              "return": {
+                "type": {
+                  "text": "Promise<Record | undefined>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "get_all_revisions_for_task",
+              "return": {
+                "type": {
+                  "text": "Promise<Record[] | undefined>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "get_original_task",
+              "return": {
+                "type": {
+                  "text": "Promise<Record | undefined>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "get_all_deletes_for_task",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<SignedActionHashed<Delete>> | undefined>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "get_oldest_delete_for_task",
+              "return": {
+                "type": {
+                  "text": "Promise<SignedActionHashed<Delete> | undefined>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "delete_task",
+              "return": {
+                "type": {
+                  "text": "Promise<ActionHash>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "original_task_hash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "update_task",
+              "return": {
+                "type": {
+                  "text": "Promise<Record>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "input",
+                  "type": {
+                    "text": "{\n\t\toriginal_task_hash: ActionHash;\n\t\tprevious_task_hash: ActionHash;\n\t\tupdated_task: Task;\n\t}"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "get_tasks_for_assignee",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<Link>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "assignee",
+                  "type": {
+                    "text": "AgentPubKey"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "get_dependent_tasks_for_task",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<Link>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "get_unfinished_tasks",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<Link>>"
+                }
+              }
+            }
+          ],
+          "superclass": {
+            "name": "ZomeMock",
+            "package": "@holochain-open-dev/utils"
+          }
+        },
+        {
+          "kind": "function",
+          "name": "sampleTask",
+          "return": {
+            "type": {
+              "text": "Promise<Task>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "client",
+              "type": {
+                "text": "TasksClient"
+              }
+            },
+            {
+              "name": "partialTask",
+              "default": "{}",
+              "type": {
+                "text": "Partial<Task>"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TasksZomeMock",
+          "declaration": {
+            "name": "TasksZomeMock",
+            "module": "src/mocks.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "sampleTask",
+          "declaration": {
+            "name": "sampleTask",
+            "module": "src/mocks.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/notifications.ts",
+      "declarations": [
+        {
+          "kind": "variable",
+          "name": "NOTIFICATIONS_TYPES",
+          "type": {
+            "text": "{\n\tTASK_UNBLOCKED: 'tasks/task_unblocked',\n\tTASK_ASSIGNED_TO_YOU: 'tasks/task_assigned_to_you',\n\tTASK_UNASSIGNED_TO_YOU: 'tasks/task_unassigned_to_you',\n\tDEPENDENCY_FOR_YOUR_TASK_WAS_CANCELLED:\n\t\t'tasks/dependency_for_your_task_was_cancelled',\n\tASSIGNEE_REMOVED_FROM_YOUR_DEPENDENCIES:\n\t\t'tasks/assignee_removed_from_your_dependencies',\n}"
+          },
+          "default": "{\n\tTASK_UNBLOCKED: 'tasks/task_unblocked',\n\tTASK_ASSIGNED_TO_YOU: 'tasks/task_assigned_to_you',\n\tTASK_UNASSIGNED_TO_YOU: 'tasks/task_unassigned_to_you',\n\tDEPENDENCY_FOR_YOUR_TASK_WAS_CANCELLED:\n\t\t'tasks/dependency_for_your_task_was_cancelled',\n\tASSIGNEE_REMOVED_FROM_YOUR_DEPENDENCIES:\n\t\t'tasks/assignee_removed_from_your_dependencies',\n}"
+        },
+        {
+          "kind": "function",
+          "name": "notificationsTypes",
+          "return": {
+            "type": {
+              "text": "Record<TasksNotificationsTypes, NotificationType>"
+            }
+          },
+          "parameters": [
+            {
+              "name": "tasksStore",
+              "type": {
+                "text": "TasksStore"
+              }
+            },
+            {
+              "name": "onClickHandlers",
+              "optional": true,
+              "type": {
+                "text": "TasksNotificationClickHandlers"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "NOTIFICATIONS_TYPES",
+          "declaration": {
+            "name": "NOTIFICATIONS_TYPES",
+            "module": "src/notifications.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "notificationsTypes",
+          "declaration": {
+            "name": "notificationsTypes",
+            "module": "src/notifications.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/tasks-client.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TasksClient",
+          "members": [
+            {
+              "kind": "method",
+              "name": "createTask",
+              "return": {
+                "type": {
+                  "text": "Promise<EntryRecord<Task>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "task",
+                  "type": {
+                    "text": "Task"
+                  }
+                }
+              ],
+              "description": "Task"
+            },
+            {
+              "kind": "method",
+              "name": "getLatestTask",
+              "return": {
+                "type": {
+                  "text": "Promise<EntryRecord<Task> | undefined>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getOriginalTask",
+              "return": {
+                "type": {
+                  "text": "Promise<EntryRecord<Task> | undefined>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getAllRevisionsForTask",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<EntryRecord<Task>>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "updateTask",
+              "return": {
+                "type": {
+                  "text": "Promise<void>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "originalTaskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                },
+                {
+                  "name": "previousTaskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                },
+                {
+                  "name": "updatedTask",
+                  "type": {
+                    "text": "Task"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "deleteTask",
+              "return": {
+                "type": {
+                  "text": "Promise<ActionHash>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "originalTaskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getAllDeletesForTask",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<SignedActionHashed<Delete>> | undefined>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "originalTaskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getOldestDeleteForTask",
+              "return": {
+                "type": {
+                  "text": "Promise<SignedActionHashed<Delete> | undefined>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "originalTaskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getTasksForAssignee",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<Link>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "assignee",
+                  "type": {
+                    "text": "AgentPubKey"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getDeletedTasksForAssignee",
+              "return": {
+                "type": {
+                  "text": "Promise<\n\t\tArray<[SignedActionHashed<CreateLink>, SignedActionHashed<DeleteLink>[]]>\n\t>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "assignee",
+                  "type": {
+                    "text": "AgentPubKey"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getDependentTasksForTask",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<Link>>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getDeletedDependentTasksForTask",
+              "return": {
+                "type": {
+                  "text": "Promise<\n\t\tArray<[SignedActionHashed<CreateLink>, SignedActionHashed<DeleteLink>[]]>\n\t>"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "taskHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "getUnfinishedTasks",
+              "return": {
+                "type": {
+                  "text": "Promise<Array<Link>>"
+                }
+              },
+              "description": "Unfinished Tasks"
+            }
+          ],
+          "superclass": {
+            "name": "ZomeClient",
+            "package": "@holochain-open-dev/utils"
+          }
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TasksClient",
+          "declaration": {
+            "name": "TasksClient",
+            "module": "src/tasks-client.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/tasks-store.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TasksStore",
+          "members": [
+            {
+              "kind": "field",
+              "name": "updatingTasks",
+              "privacy": "private",
+              "default": "new HoloHashMap<HoloHash, boolean>()"
+            },
+            {
+              "kind": "method",
+              "name": "updateDependentTaskIfNecessary",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "originalDependencyHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                },
+                {
+                  "name": "latestDependencyHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                },
+                {
+                  "name": "newDependencyStatus",
+                  "type": {
+                    "text": "TaskStatus"
+                  }
+                },
+                {
+                  "name": "originalDependentHash",
+                  "type": {
+                    "text": "ActionHash"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "field",
+              "name": "tasks",
+              "default": "new LazyHoloHashMap((taskHash: ActionHash) => ({\n\t\tlatestVersion: latestVersionOfEntrySignal(this.client, () =>\n\t\t\tthis.client.getLatestTask(taskHash),\n\t\t),\n\t\toriginal: immutableEntrySignal(() => this.client.getOriginalTask(taskHash)),\n\t\tallRevisions: allRevisionsOfEntrySignal(this.client, () =>\n\t\t\tthis.client.getAllRevisionsForTask(taskHash),\n\t\t),\n\t\tdeletes: deletesForEntrySignal(this.client, taskHash, () =>\n\t\t\tthis.client.getAllDeletesForTask(taskHash),\n\t\t),\n\t\tdependentTasks: {\n\t\t\tlive: mapCompleted(\n\t\t\t\tliveLinksSignal(\n\t\t\t\t\tthis.client,\n\t\t\t\t\ttaskHash,\n\t\t\t\t\t() => this.client.getDependentTasksForTask(taskHash),\n\t\t\t\t\t'Dependency',\n\t\t\t\t),\n\t\t\t\tlinks => links.map(l => l.target),\n\t\t\t),\n\t\t\tdeleted: mapCompleted(\n\t\t\t\tdeletedLinksSignal(\n\t\t\t\t\tthis.client,\n\t\t\t\t\ttaskHash,\n\t\t\t\t\t() => this.client.getDeletedDependentTasksForTask(taskHash),\n\t\t\t\t\t'Dependency',\n\t\t\t\t),\n\t\t\t\tlinks => links.map(l => l[0].hashed.content.target_address),\n\t\t\t),\n\t\t},\n\t}))",
+              "description": "Task"
+            },
+            {
+              "kind": "field",
+              "name": "tasksForAssignee",
+              "default": "new LazyHoloHashMap((assignee: AgentPubKey) => ({\n\t\tlive: mapCompleted(\n\t\t\tliveLinksSignal(\n\t\t\t\tthis.client,\n\t\t\t\tassignee,\n\t\t\t\t() => this.client.getTasksForAssignee(assignee),\n\t\t\t\t'AssigneeToTasks',\n\t\t\t),\n\t\t\tlinks =>\n\t\t\t\tslice(\n\t\t\t\t\tthis.tasks,\n\t\t\t\t\tlinks.map(l => l.target),\n\t\t\t\t),\n\t\t),\n\t\tdeleted: mapCompleted(\n\t\t\tdeletedLinksSignal(\n\t\t\t\tthis.client,\n\t\t\t\tassignee,\n\t\t\t\t() => this.client.getDeletedTasksForAssignee(assignee),\n\t\t\t\t'AssigneeToTasks',\n\t\t\t),\n\t\t\tlinks =>\n\t\t\t\tslice(\n\t\t\t\t\tthis.tasks,\n\t\t\t\t\tlinks.map(l => l[0].hashed.content.target_address),\n\t\t\t\t),\n\t\t),\n\t}))"
+            },
+            {
+              "kind": "field",
+              "name": "myTasks"
+            },
+            {
+              "kind": "field",
+              "name": "unfinishedTasks",
+              "description": "Unfinished Tasks"
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TasksStore",
+          "declaration": {
+            "name": "TasksStore",
+            "module": "src/tasks-store.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/types.ts",
+      "declarations": [],
+      "exports": []
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/utils.ts",
+      "declarations": [
+        {
+          "kind": "function",
+          "name": "effect",
+          "parameters": [
+            {
+              "name": "cb",
+              "type": {
+                "text": "() => unknown"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "function",
+          "name": "waitUntil",
+          "parameters": [
+            {
+              "name": "condition",
+              "type": {
+                "text": "() => Promise<boolean>"
+              }
+            },
+            {
+              "name": "timeout",
+              "type": {
+                "text": "number"
+              }
+            }
+          ]
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "effect",
+          "declaration": {
+            "name": "effect",
+            "module": "src/utils.ts"
+          }
+        },
+        {
+          "kind": "js",
+          "name": "waitUntil",
+          "declaration": {
+            "name": "waitUntil",
+            "module": "src/utils.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/create-task.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "CreateTask",
+          "members": [
+            {
+              "kind": "method",
+              "name": "createTask",
+              "parameters": [
+                {
+                  "name": "fields",
+                  "type": {
+                    "text": "Partial<Task>"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "task-created",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "description": "detail will contain { taskHash }",
+              "name": "task-created:"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "SignalWatcher",
+              "package": "@holochain-open-dev/signals"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "create-task",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "CreateTask",
+          "declaration": {
+            "name": "CreateTask",
+            "module": "src/elements/create-task.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "create-task",
+          "declaration": {
+            "name": "CreateTask",
+            "module": "src/elements/create-task.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/dependent-tasks-for-task.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "DependentTasksForTask",
+          "members": [
+            {
+              "kind": "field",
+              "name": "taskHash",
+              "type": {
+                "text": "ActionHash"
+              },
+              "description": "REQUIRED. The TaskHash for which the Tasks should be fetched",
+              "attribute": "taskHash"
+            },
+            {
+              "kind": "method",
+              "name": "renderList",
+              "parameters": [
+                {
+                  "name": "hashes",
+                  "type": {
+                    "text": "Array<ActionHash>"
+                  }
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "name": "taskHash",
+              "type": {
+                "text": "ActionHash"
+              },
+              "description": "REQUIRED. The TaskHash for which the Tasks should be fetched",
+              "fieldName": "taskHash"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "SignalWatcher",
+              "package": "@holochain-open-dev/signals"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "dependent-tasks-for-task",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "DependentTasksForTask",
+          "declaration": {
+            "name": "DependentTasksForTask",
+            "module": "src/elements/dependent-tasks-for-task.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "dependent-tasks-for-task",
+          "declaration": {
+            "name": "DependentTasksForTask",
+            "module": "src/elements/dependent-tasks-for-task.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/edit-task.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "EditTask",
+          "members": [
+            {
+              "kind": "field",
+              "name": "taskHash",
+              "type": {
+                "text": "ActionHash"
+              },
+              "description": "REQUIRED. The hash of the original `Create` action for this Task",
+              "attribute": "taskHash"
+            },
+            {
+              "kind": "method",
+              "name": "updateTask",
+              "parameters": [
+                {
+                  "name": "currentRecord",
+                  "type": {
+                    "text": "EntryRecord<Task>"
+                  }
+                },
+                {
+                  "name": "fields",
+                  "type": {
+                    "text": "Partial<Task>"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "renderEditForm",
+              "parameters": [
+                {
+                  "name": "currentRecord",
+                  "type": {
+                    "text": "EntryRecord<Task>"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "task-updated",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "name": "edit-canceled",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "description": "detail will contain { originalTaskHash, previousTaskHash, updatedTaskHash }",
+              "name": "task-updated:"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "taskHash",
+              "type": {
+                "text": "ActionHash"
+              },
+              "description": "REQUIRED. The hash of the original `Create` action for this Task",
+              "fieldName": "taskHash"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "SignalWatcher",
+              "package": "@holochain-open-dev/signals"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "edit-task",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "EditTask",
+          "declaration": {
+            "name": "EditTask",
+            "module": "src/elements/edit-task.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "edit-task",
+          "declaration": {
+            "name": "EditTask",
+            "module": "src/elements/edit-task.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/task-detail.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TaskDetail",
+          "members": [
+            {
+              "kind": "field",
+              "name": "taskHash",
+              "type": {
+                "text": "ActionHash"
+              },
+              "description": "REQUIRED. The hash of the Task to show",
+              "attribute": "taskHash"
+            },
+            {
+              "kind": "method",
+              "name": "deleteTask"
+            },
+            {
+              "kind": "method",
+              "name": "renderDetail",
+              "parameters": [
+                {
+                  "name": "entryRecord",
+                  "type": {
+                    "text": "EntryRecord<Task>"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "name": "task-deleted",
+              "type": {
+                "text": "CustomEvent"
+              }
+            },
+            {
+              "description": "detail will contain { taskHash }",
+              "name": "task-deleted:"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "taskHash",
+              "type": {
+                "text": "ActionHash"
+              },
+              "description": "REQUIRED. The hash of the Task to show",
+              "fieldName": "taskHash"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "SignalWatcher",
+              "package": "@holochain-open-dev/signals"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "task-detail",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TaskDetail",
+          "declaration": {
+            "name": "TaskDetail",
+            "module": "src/elements/task-detail.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "task-detail",
+          "declaration": {
+            "name": "TaskDetail",
+            "module": "src/elements/task-detail.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/task-summary.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TaskSummary",
+          "members": [
+            {
+              "kind": "field",
+              "name": "taskHash",
+              "type": {
+                "text": "ActionHash"
+              },
+              "description": "REQUIRED. The hash of the Task to show",
+              "attribute": "taskHash"
+            },
+            {
+              "kind": "method",
+              "name": "renderSummary",
+              "parameters": [
+                {
+                  "name": "entryRecord",
+                  "type": {
+                    "text": "EntryRecord<Task>"
+                  }
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "description": "detail will contain { taskHash }",
+              "name": "task-selected:"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "taskHash",
+              "type": {
+                "text": "ActionHash"
+              },
+              "description": "REQUIRED. The hash of the Task to show",
+              "fieldName": "taskHash"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "SignalWatcher",
+              "package": "@holochain-open-dev/signals"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "task-summary",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TaskSummary",
+          "declaration": {
+            "name": "TaskSummary",
+            "module": "src/elements/task-summary.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "task-summary",
+          "declaration": {
+            "name": "TaskSummary",
+            "module": "src/elements/task-summary.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/tasks-context.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TasksContext",
+          "members": [
+            {
+              "kind": "field",
+              "name": "store",
+              "type": {
+                "text": "TasksStore"
+              },
+              "attribute": "store"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "store",
+              "type": {
+                "text": "TasksStore"
+              },
+              "fieldName": "store"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "tasks-context",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TasksContext",
+          "declaration": {
+            "name": "TasksContext",
+            "module": "src/elements/tasks-context.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "tasks-context",
+          "declaration": {
+            "name": "TasksContext",
+            "module": "src/elements/tasks-context.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/tasks-for-assignee.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "TasksForAssignee",
+          "members": [
+            {
+              "kind": "field",
+              "name": "assignee",
+              "type": {
+                "text": "AgentPubKey"
+              },
+              "description": "REQUIRED. The Assignee for which the Tasks should be fetched",
+              "attribute": "assignee"
+            },
+            {
+              "kind": "method",
+              "name": "renderList",
+              "parameters": [
+                {
+                  "name": "hashes",
+                  "type": {
+                    "text": "Array<ActionHash>"
+                  }
+                }
+              ]
+            }
+          ],
+          "attributes": [
+            {
+              "name": "assignee",
+              "type": {
+                "text": "AgentPubKey"
+              },
+              "description": "REQUIRED. The Assignee for which the Tasks should be fetched",
+              "fieldName": "assignee"
+            }
+          ],
+          "mixins": [
+            {
+              "name": "SignalWatcher",
+              "package": "@holochain-open-dev/signals"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "tasks-for-assignee",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "TasksForAssignee",
+          "declaration": {
+            "name": "TasksForAssignee",
+            "module": "src/elements/tasks-for-assignee.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "tasks-for-assignee",
+          "declaration": {
+            "name": "TasksForAssignee",
+            "module": "src/elements/tasks-for-assignee.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/elements/unfinished-tasks.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "",
+          "name": "UnfinishedTasks",
+          "members": [
+            {
+              "kind": "method",
+              "name": "renderList",
+              "parameters": [
+                {
+                  "name": "hashes",
+                  "type": {
+                    "text": "Array<ActionHash>"
+                  }
+                }
+              ]
+            }
+          ],
+          "mixins": [
+            {
+              "name": "SignalWatcher",
+              "package": "@holochain-open-dev/signals"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "unfinished-tasks",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "UnfinishedTasks",
+          "declaration": {
+            "name": "UnfinishedTasks",
+            "module": "src/elements/unfinished-tasks.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "unfinished-tasks",
+          "declaration": {
+            "name": "UnfinishedTasks",
+            "module": "src/elements/unfinished-tasks.ts"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,47 +1,47 @@
 
-# `<tasks-for-task>`
+# `<dependent-tasks-for-task>`
 
 ## Usage
 
 0. If you haven't already, [go through the setup for the module](/setup).
 
-1. Import the `<tasks-for-task>` element somewhere in the javascript side of your web-app like this:
+1. Import the `<dependent-tasks-for-task>` element somewhere in the javascript side of your web-app like this:
 
 ```js
-import '@holochain-open-dev/tasks/dist/elements/tasks-for-task.js'
+import '@holochain-open-dev/tasks/dist/elements/dependent-tasks-for-task.js'
 ```
 
 2. Use it in the html side of your web-app like this:
 
 ::: code-group
 ```html [Lit]
-<tasks-for-task .taskHash=${ taskHash }>
-</tasks-for-task>
+<dependent-tasks-for-task .taskHash=${ taskHash }>
+</dependent-tasks-for-task>
 ```
 
 ```html [React]
-<tasks-for-task taskHash={ taskHash }>
-</tasks-for-task>
+<dependent-tasks-for-task taskHash={ taskHash }>
+</dependent-tasks-for-task>
 ```
 
 ```html [Angular]
-<tasks-for-task [taskHash]="taskHash">
-</tasks-for-task>
+<dependent-tasks-for-task [taskHash]="taskHash">
+</dependent-tasks-for-task>
 ```
 
 ```html [Vue]
-<tasks-for-task :taskHash="taskHash">
-</tasks-for-task>
+<dependent-tasks-for-task :taskHash="taskHash">
+</dependent-tasks-for-task>
 ```
 
 ```html [Svelte]
-<tasks-for-task task-hash={encodeHashToBase64(taskHash)}>
-</tasks-for-task>
+<dependent-tasks-for-task task-hash={encodeHashToBase64(taskHash)}>
+</dependent-tasks-for-task>
 ```
 :::
 
 > [!WARNING]
-> Like all the elements in this module, `<tasks-for-task>` needs to be placed inside an initialized `<tasks-context>`.
+> Like all the elements in this module, `<dependent-tasks-for-task>` needs to be placed inside an initialized `<tasks-context>`.
 
 ## Demo
 
@@ -69,7 +69,7 @@ onMounted(async () => {
   await import('@api-viewer/demo/lib/api-demo.js');
   await import('@holochain-open-dev/profiles/dist/elements/profiles-context.js');
   if (!customElements.get('tasks-context')) await import('../../ui/src/elements/tasks-context.ts');
-  if (!customElements.get('tasks-for-task')) await import('../../ui/src/elements/tasks-for-task.ts');
+  if (!customElements.get('dependent-tasks-for-task')) await import('../../ui/src/elements/dependent-tasks-for-task.ts');
 
   const profiles = await demoProfiles();
   const myPubKey = Array.from(profiles.keys())[0];
@@ -97,7 +97,7 @@ onMounted(async () => {
       <tasks-context .store=${store}>
         <api-demo src="custom-elements.json" only="tasks-for-task" exclude-knobs="store">
           <template data-element="tasks-for-task" data-target="host">
-            <tasks-for-task task-hash="${unsafeStatic(encodeHashToBase64(task2.dependencies[0]))}"></tasks-for-task>
+            <dependent-tasks-for-task task-hash="${unsafeStatic(encodeHashToBase64(task2.dependencies[0]))}"></dependent-tasks-for-task>
           </template>
         </api-demo>
       </tasks-context>
@@ -109,7 +109,7 @@ onMounted(async () => {
 
 ## API Reference
 
-`<tasks-for-task>` is a [custom element](https://web.dev/articles/custom-elements-v1), which means that it can be used in any web app or website. Here is the reference for its API:
+`<dependent-tasks-for-task>` is a [custom element](https://web.dev/articles/custom-elements-v1), which means that it can be used in any web app or website. Here is the reference for its API:
 
 <api-docs src="custom-elements.json" only="tasks-for-task">
 </api-docs>
