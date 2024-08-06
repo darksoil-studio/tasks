@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"tasks_integrity":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.77.2/core/cmp/trait.Eq.html\" title=\"trait core::cmp::Eq\">Eq</a> for <a class=\"enum\" href=\"tasks_integrity/enum.UnitEntryTypes.html\" title=\"enum tasks_integrity::UnitEntryTypes\">UnitEntryTypes</a>"],["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.77.2/core/cmp/trait.Eq.html\" title=\"trait core::cmp::Eq\">Eq</a> for <a class=\"enum\" href=\"tasks_integrity/enum.LinkTypes.html\" title=\"enum tasks_integrity::LinkTypes\">LinkTypes</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
