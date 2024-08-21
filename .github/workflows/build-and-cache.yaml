@@ -61,17 +61,17 @@ jobs:
         env:
           CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
-          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#tasks_integrity.meta.release
-          cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#tasks_integrity.meta.release | nix run nixpkgs#jq -- -r 'keys[0]')
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#tasks_integrity.release
+          cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#tasks_integrity.release | nix run nixpkgs#jq -- -r 'keys[0]')
 
-          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#tasks.meta.release
-          cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#tasks.meta.release | nix run nixpkgs#jq -- -r 'keys[0]')
+          cachix watch-exec darksoil-studio -- nix build --no-update-lock-file --accept-flake-config -L .#tasks.release
+          cachix push darksoil-studio $(nix path-info --json --accept-flake-config --no-warn-dirty .#tasks.release | nix run nixpkgs#jq -- -r 'keys[0]')
 
       - name: Pin release zomes
         if: matrix.os == 'ubuntu-latest' && github.event_name != 'pull_request'
         env:
           CACHIX_AUTH_TOKEN: "${{ secrets.DARKSOIL_CACHIX_AUTH_TOKEN }}"
         run: |
-          cachix pin darksoil-studio tasks_integrity $(nix path-info --json --accept-flake-config --no-warn-dirty .#tasks_integrity.meta.release | nix run nixpkgs#jq -- -r 'keys[0]')
+          cachix pin darksoil-studio tasks_integrity $(nix path-info --json --accept-flake-config --no-warn-dirty .#tasks_integrity.release | nix run nixpkgs#jq -- -r 'keys[0]')
 
-          cachix pin darksoil-studio tasks $(nix path-info --json --accept-flake-config --no-warn-dirty .#tasks.meta.release | nix run nixpkgs#jq -- -r 'keys[0]')
+          cachix pin darksoil-studio tasks $(nix path-info --json --accept-flake-config --no-warn-dirty .#tasks.release | nix run nixpkgs#jq -- -r 'keys[0]')
