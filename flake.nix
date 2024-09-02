@@ -2,18 +2,14 @@
   description = "Template for Holochain app development";
 
   inputs = {
-    notifications.url = "github:darksoil-studio/notifications/main";
-    versions.url = "github:holochain/holochain?dir=versions/0_3";
-
-    holochain.url = "github:holochain/holochain";
-    holochain.inputs.versions.follows = "versions";
-
-    nixpkgs.follows = "holochain/nixpkgs";
-    flake-parts.follows = "holochain/flake-parts";
+    nixpkgs.follows = "holonix/nixpkgs";
+    holonix.url = "github:holochain/holonix/main-0.3";
+    flake-parts.follows = "holonix/flake-parts";
 
     hc-infra.url = "github:holochain-open-dev/infrastructure";
     scaffolding.url = "github:holochain-open-dev/templates";
 
+    notifications.url = "github:darksoil-studio/notifications/main";
     profiles.url = "github:holochain-open-dev/profiles/nixify";
   };
 
@@ -38,12 +34,12 @@
         ./workdir/happ.nix
       ];
 
-      systems = builtins.attrNames inputs.holochain.devShells;
+      systems = builtins.attrNames inputs.holonix.devShells;
       perSystem = { inputs', config, pkgs, system, ... }: {
         devShells.default = pkgs.mkShell {
           inputsFrom = [
             inputs'.hc-infra.devShells.synchronized-pnpm
-            inputs'.holochain.devShells.holonix
+            inputs'.holonix.devShells.default
           ];
 
           packages = [ inputs'.scaffolding.packages.hc-scaffold-zome-template ];
