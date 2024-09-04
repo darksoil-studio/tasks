@@ -657,11 +657,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1725347430,
-        "narHash": "sha256-CPHastYvegqHPg5ZKh7IiU6r2Xb4Zb5wh1rLrQVRzsQ=",
+        "lastModified": 1725433809,
+        "narHash": "sha256-4o26zaGkLMMCi1GA+9VevwICPDdKgezT9NWTFJOn7mQ=",
         "owner": "holochain-open-dev",
         "repo": "infrastructure",
-        "rev": "2eb6e43ac7e3bc6a0384c1eab867ea178cd5ffb1",
+        "rev": "442ae6c9204d822191219d55c91c5868ef7cc11f",
         "type": "github"
       },
       "original": {
