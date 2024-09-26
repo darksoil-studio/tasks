@@ -2,9 +2,8 @@
 
 {
   perSystem = { inputs', self', lib, system, ... }: {
-    packages.tasks_test_dna = inputs.hc-infra.outputs.lib.dna {
+    packages.tasks_test_dna = inputs.hc-infra.outputs.builders.${system}.dna {
       dnaManifest = ./dna.yaml;
-      inherit system;
       zomes = {
         notifications_integrity =
           inputs'.notifications.packages.notifications_integrity;
