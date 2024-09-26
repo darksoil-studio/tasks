@@ -29,7 +29,7 @@
     "./locales/*": "./locales/*"
   },
   "dependencies": {
-    "@darksoil-studio/notifications": "github:darksoil-studio/notifications#d63a0eecbb29bcd47c4a9f5991a09105f8503e0f&path:ui",
+    "@darksoil-studio/notifications": "github:darksoil-studio/notifications#f7f4eebc5b8de1f1f102c5bb2deb4a5350210fe3&path:ui",
     "@holochain-open-dev/elements": "^0.300.1",
     "@holochain-open-dev/profiles": "github:holochain-open-dev/profiles#e04300c94df9d1821b2d03fdf9980611d935ec24&path:ui",
     "@holochain-open-dev/signals": "^0.300.7",

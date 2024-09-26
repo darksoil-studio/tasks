@@ -2278,11 +2278,11 @@
         "scaffolding": "scaffolding"
       },
       "locked": {
-        "lastModified": 1727354845,
-        "narHash": "sha256-uXFCAfwbTPYN5PaF/5LoXt+fah0Kt4evBh9xHV3aIjk=",
+        "lastModified": 1727355756,
+        "narHash": "sha256-L9D6OpG/IQE9cr8zpdU98Fh4UycKm+C3kwN7fllRp8s=",
         "owner": "darksoil-studio",
         "repo": "notifications",
-        "rev": "d63a0eecbb29bcd47c4a9f5991a09105f8503e0f",
+        "rev": "f7f4eebc5b8de1f1f102c5bb2deb4a5350210fe3",
         "type": "github"
       },
       "original": {
