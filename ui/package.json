@@ -29,9 +29,9 @@
     "./locales/*": "./locales/*"
   },
   "dependencies": {
-    "@darksoil-studio/notifications": "github:darksoil-studio/notifications#f7f4eebc5b8de1f1f102c5bb2deb4a5350210fe3&path:ui",
+    "@darksoil-studio/notifications": "github:darksoil-studio/notifications#c1fd45a17aba34e8028f0ca971755b3fe6d7f4ed&path:ui",
     "@holochain-open-dev/elements": "^0.300.1",
-    "@holochain-open-dev/profiles": "github:holochain-open-dev/profiles#e04300c94df9d1821b2d03fdf9980611d935ec24&path:ui",
+    "@holochain-open-dev/profiles": "github:holochain-open-dev/profiles#43e97c82887cc3eb91ef92c9ab01b93529693b68&path:ui",
     "@holochain-open-dev/signals": "^0.300.7",
     "@holochain-open-dev/utils": "^0.300.2",
     "@holochain/client": "^0.17.1",
