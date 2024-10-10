@@ -5,7 +5,7 @@ use crate::{
 use hdk::prelude::*;
 use tasks_integrity::*;
 
-///Creating a task
+/// takes Task struct input, creates a task, links dependencies (if declared) and adds tasks to unfisished tasks
 #[hdk_extern]
 pub fn create_task(task: Task) -> ExternResult<Record> {
     let task_hash = create_entry(&EntryTypes::Task(task.clone()))?;
@@ -32,7 +32,7 @@ pub fn create_task(task: Task) -> ExternResult<Record> {
     Ok(record)
 }
 
-///Get the latest version of a task
+///Finds the latest version of a task (if it has been updater, otherwise just returns the same)
 #[hdk_extern]
 pub fn get_latest_task(original_task_hash: ActionHash) -> ExternResult<Option<Record>> {
     let links = get_links(
@@ -69,7 +69,7 @@ pub fn get_original_task(original_task_hash: ActionHash) -> ExternResult<Option<
     }
 }
 
-///Get all versions of a task
+///Get the revision history for a task
 #[hdk_extern]
 pub fn get_all_revisions_for_task(original_task_hash: ActionHash) -> ExternResult<Vec<Record>> {
     let Some(original_record) = get_original_task(original_task_hash.clone())? else {
@@ -104,7 +104,7 @@ pub struct CreateUpdateLinkForTaskInput {
     pub new_task_hash: ActionHash,
 }
 
-///Creating the link to a new version of a task
+///Creates the update link for a task when a revision of a task is done to link old to new
 #[hdk_extern]
 pub fn create_update_link_for_task(input: CreateUpdateLinkForTaskInput) -> ExternResult<()> {
     create_link_relaxed(
@@ -123,7 +123,7 @@ pub struct UpdateTaskInput {
     pub updated_task: Task,
 }
 
-///Update a task
+///Updates the task if there are changes in task being finished, dependencies & assignees
 #[hdk_extern]
 pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
     update_relaxed(
@@ -224,8 +224,7 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
     Ok(())
 }
 
-
-///Setting status of task based on dependencies
+///Evaluates and sets status of the task (Blocked or Ready) based on non-optional depenancies of other tasks
 pub fn new_status_from_dependencies(
     current_status: TaskStatus,
     dependencies: Vec<TaskDependency>,
@@ -255,7 +254,7 @@ pub fn new_status_from_dependencies(
     }
 }
 
-///Checking if an update on task status of dependencies is needed
+///Checks if a change in status impacts the status of other tasks
 pub fn dependant_task_update_needed(previous_status: TaskStatus, new_status: TaskStatus) -> bool {
     if previous_status.eq(&new_status) {
         return false;
@@ -267,7 +266,7 @@ pub fn dependant_task_update_needed(previous_status: TaskStatus, new_status: Tas
         _ => false,
     }
 }
-///Delete task
+///Deletes a task, including links to assignees and dependency links
 #[hdk_extern]
 pub fn delete_task(original_task_hash: ActionHash) -> ExternResult<ActionHash> {
     let details = get_details(original_task_hash.clone(), GetOptions::default())?.ok_or(
@@ -318,7 +317,7 @@ pub fn delete_task(original_task_hash: ActionHash) -> ExternResult<ActionHash> {
     delete_entry(original_task_hash)
 }
 
-///Get all delete actions for a task
+///Get all of the delete entries for a specific task
 #[hdk_extern]
 pub fn get_all_deletes_for_task(
     original_task_hash: ActionHash,
@@ -334,7 +333,7 @@ pub fn get_all_deletes_for_task(
     }
 }
 
-///Get the oldest delete action for a task
+///Gets the first delete entry for a specific task
 #[hdk_extern]
 pub fn get_oldest_delete_for_task(
     original_task_hash: ActionHash,
@@ -351,13 +350,13 @@ pub fn get_oldest_delete_for_task(
     Ok(deletes.first().cloned())
 }
 
-///Get all tasks for an assignee
+///Gets a vector of links for all the tasks that have been assigned to the AgentPubKey input
 #[hdk_extern]
 pub fn get_tasks_for_assignee(assignee: AgentPubKey) -> ExternResult<Vec<Link>> {
     get_links(GetLinksInputBuilder::try_new(assignee, LinkTypes::AssigneeToTasks)?.build())
 }
 
-///Get the deleted tasks for an assignee
+///Returns a details list of all the tasks that have been assigned to someone and deleted
 #[hdk_extern]
 pub fn get_deleted_tasks_for_assignee(
     assignee: AgentPubKey,
@@ -375,13 +374,13 @@ pub fn get_deleted_tasks_for_assignee(
         .collect())
 }
 
-///Get all dependencies for a task
+///Return a vector of links to all the tasks dependent on the task being input
 #[hdk_extern]
 pub fn get_dependent_tasks_for_task(task_hash: ActionHash) -> ExternResult<Vec<Link>> {
     get_links(GetLinksInputBuilder::try_new(task_hash, LinkTypes::Dependency)?.build())
 }
 
-///Get the deleted dependent tasks for some task
+///Returns a details list of all the tasks that have been dependent on task and deleted
 #[hdk_extern]
 pub fn get_deleted_dependent_tasks_for_task(
     task_hash: ActionHash,
