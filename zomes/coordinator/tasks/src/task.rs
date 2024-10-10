@@ -5,6 +5,7 @@ use crate::{
 use hdk::prelude::*;
 use tasks_integrity::*;
 
+///Creating a task
 #[hdk_extern]
 pub fn create_task(task: Task) -> ExternResult<Record> {
     let task_hash = create_entry(&EntryTypes::Task(task.clone()))?;
@@ -31,6 +32,7 @@ pub fn create_task(task: Task) -> ExternResult<Record> {
     Ok(record)
 }
 
+///Get the latest version of a task
 #[hdk_extern]
 pub fn get_latest_task(original_task_hash: ActionHash) -> ExternResult<Option<Record>> {
     let links = get_links(
@@ -53,6 +55,7 @@ pub fn get_latest_task(original_task_hash: ActionHash) -> ExternResult<Option<Re
     get(latest_task_hash, GetOptions::default())
 }
 
+///Get the original version of a task
 #[hdk_extern]
 pub fn get_original_task(original_task_hash: ActionHash) -> ExternResult<Option<Record>> {
     let Some(details) = get_details(original_task_hash, GetOptions::default())? else {
@@ -66,6 +69,7 @@ pub fn get_original_task(original_task_hash: ActionHash) -> ExternResult<Option<
     }
 }
 
+///Get all versions of a task
 #[hdk_extern]
 pub fn get_all_revisions_for_task(original_task_hash: ActionHash) -> ExternResult<Vec<Record>> {
     let Some(original_record) = get_original_task(original_task_hash.clone())? else {
@@ -100,6 +104,7 @@ pub struct CreateUpdateLinkForTaskInput {
     pub new_task_hash: ActionHash,
 }
 
+///Creating the link to a new version of a task
 #[hdk_extern]
 pub fn create_update_link_for_task(input: CreateUpdateLinkForTaskInput) -> ExternResult<()> {
     create_link_relaxed(
@@ -118,6 +123,7 @@ pub struct UpdateTaskInput {
     pub updated_task: Task,
 }
 
+///Update a task
 #[hdk_extern]
 pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
     update_relaxed(
@@ -218,6 +224,8 @@ pub fn update_task(input: UpdateTaskInput) -> ExternResult<()> {
     Ok(())
 }
 
+
+///Setting status of task based on dependencies
 pub fn new_status_from_dependencies(
     current_status: TaskStatus,
     dependencies: Vec<TaskDependency>,
@@ -247,6 +255,7 @@ pub fn new_status_from_dependencies(
     }
 }
 
+///Checking if an update on task status of dependencies is needed
 pub fn dependant_task_update_needed(previous_status: TaskStatus, new_status: TaskStatus) -> bool {
     if previous_status.eq(&new_status) {
         return false;
@@ -258,7 +267,7 @@ pub fn dependant_task_update_needed(previous_status: TaskStatus, new_status: Tas
         _ => false,
     }
 }
-
+///Delete task
 #[hdk_extern]
 pub fn delete_task(original_task_hash: ActionHash) -> ExternResult<ActionHash> {
     let details = get_details(original_task_hash.clone(), GetOptions::default())?.ok_or(
@@ -309,6 +318,7 @@ pub fn delete_task(original_task_hash: ActionHash) -> ExternResult<ActionHash> {
     delete_entry(original_task_hash)
 }
 
+///Get all delete actions for a task
 #[hdk_extern]
 pub fn get_all_deletes_for_task(
     original_task_hash: ActionHash,
@@ -324,6 +334,7 @@ pub fn get_all_deletes_for_task(
     }
 }
 
+///Get the oldest delete action for a task
 #[hdk_extern]
 pub fn get_oldest_delete_for_task(
     original_task_hash: ActionHash,
@@ -340,11 +351,13 @@ pub fn get_oldest_delete_for_task(
     Ok(deletes.first().cloned())
 }
 
+///Get all tasks for an assignee
 #[hdk_extern]
 pub fn get_tasks_for_assignee(assignee: AgentPubKey) -> ExternResult<Vec<Link>> {
     get_links(GetLinksInputBuilder::try_new(assignee, LinkTypes::AssigneeToTasks)?.build())
 }
 
+///Get the deleted tasks for an assignee
 #[hdk_extern]
 pub fn get_deleted_tasks_for_assignee(
     assignee: AgentPubKey,
@@ -362,11 +375,13 @@ pub fn get_deleted_tasks_for_assignee(
         .collect())
 }
 
+///Get all dependencies for a task
 #[hdk_extern]
 pub fn get_dependent_tasks_for_task(task_hash: ActionHash) -> ExternResult<Vec<Link>> {
     get_links(GetLinksInputBuilder::try_new(task_hash, LinkTypes::Dependency)?.build())
 }
 
+///Get the deleted dependent tasks for some task
 #[hdk_extern]
 pub fn get_deleted_dependent_tasks_for_task(
     task_hash: ActionHash,

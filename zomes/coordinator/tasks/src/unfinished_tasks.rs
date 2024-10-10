@@ -1,6 +1,7 @@
 use hdk::prelude::*;
 use tasks_integrity::*;
 
+///Adding a task to unfinished (linking from the anchor unfinished_tasks)
 pub fn add_to_unfinished(task_hash: &ActionHash) -> ExternResult<()> {
     let path = Path::from("unfinished_tasks");
     create_link(
@@ -11,6 +12,8 @@ pub fn add_to_unfinished(task_hash: &ActionHash) -> ExternResult<()> {
     )?;
     Ok(())
 }
+
+///Remove a task from unfinished tasks (deleting link)
 pub fn remove_from_unfinished(task_hash: &ActionHash) -> ExternResult<()> {
     let path = Path::from("unfinished_tasks");
     let links = get_links(
@@ -27,6 +30,7 @@ pub fn remove_from_unfinished(task_hash: &ActionHash) -> ExternResult<()> {
     Ok(())
 }
 
+///Checkin if a task is finished
 pub fn is_finished(task: &Task) -> bool {
     match task.status {
         TaskStatus::Cancelled | TaskStatus::Done => true,
@@ -34,6 +38,7 @@ pub fn is_finished(task: &Task) -> bool {
     }
 }
 
+///Get all unfinished tasks
 #[hdk_extern]
 pub fn get_unfinished_tasks() -> ExternResult<Vec<Link>> {
     let path = Path::from("unfinished_tasks");

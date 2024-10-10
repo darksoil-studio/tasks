@@ -1,5 +1,6 @@
 use hdi::prelude::*;
 
+///The different statuses that a task can have
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub enum TaskStatus {
     Ready,
@@ -9,6 +10,7 @@ pub enum TaskStatus {
     Cancelled,
 }
 
+///What dependencies tasks have and if a status based on deps
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct TaskDependency {
     pub original_revision_hash: ActionHash,
@@ -17,6 +19,7 @@ pub struct TaskDependency {
     pub optional: bool,
 }
 
+///The properties of a task
 #[derive(Clone, PartialEq)]
 #[hdk_entry_helper]
 pub struct Task {
@@ -29,6 +32,7 @@ pub struct Task {
     pub original_create_hash: Option<ActionHash>,
 }
 
+///Validating the status of a task based on task dependencies
 pub fn validate_status_from_dependencies(
     task_status: TaskStatus,
     dependencies: Vec<TaskDependency>,
@@ -64,6 +68,7 @@ pub fn validate_status_from_dependencies(
     }
 }
 
+///Validation for creating a task
 pub fn validate_create_task(
     action: EntryCreationAction,
     task: Task,
@@ -110,6 +115,7 @@ pub fn validate_create_task(
     validate_status_from_dependencies(task.status, task.dependencies)
 }
 
+///Validing updating of a task
 pub fn validate_update_task(
     action: Update,
     task: Task,
@@ -144,6 +150,7 @@ pub fn validate_update_task(
     Ok(ValidateCallbackResult::Valid)
 }
 
+///Validation of task deletion
 pub fn validate_delete_task(
     _action: Delete,
     _original_action: EntryCreationAction,
@@ -151,7 +158,7 @@ pub fn validate_delete_task(
 ) -> ExternResult<ValidateCallbackResult> {
     Ok(ValidateCallbackResult::Valid)
 }
-
+///Validation for crating links between tasks and assignees
 pub fn validate_create_link_assignee_to_tasks(
     _action: CreateLink,
     _base_address: AnyLinkableHash,
@@ -175,6 +182,7 @@ pub fn validate_create_link_assignee_to_tasks(
     Ok(ValidateCallbackResult::Valid)
 }
 
+///Validate the deletion of assignee links
 pub fn validate_delete_link_assignee_to_tasks(
     _action: DeleteLink,
     _original_action: CreateLink,
@@ -185,6 +193,7 @@ pub fn validate_delete_link_assignee_to_tasks(
     Ok(ValidateCallbackResult::Valid)
 }
 
+///Validate the creaion of links between tasks
 pub fn validate_create_link_task_to_tasks(
     _action: CreateLink,
     base_address: AnyLinkableHash,
@@ -221,6 +230,7 @@ pub fn validate_create_link_task_to_tasks(
     Ok(ValidateCallbackResult::Valid)
 }
 
+///Validation of the deletion of links between tasks
 pub fn validate_delete_link_task_to_tasks(
     _action: DeleteLink,
     _original_action: CreateLink,
@@ -231,6 +241,7 @@ pub fn validate_delete_link_task_to_tasks(
     Ok(ValidateCallbackResult::Valid)
 }
 
+///Validating the updating of links between tasks
 pub fn validate_create_link_task_updates(
     _action: CreateLink,
     base_address: AnyLinkableHash,
@@ -267,6 +278,7 @@ pub fn validate_create_link_task_updates(
     Ok(ValidateCallbackResult::Valid)
 }
 
+///Validating deletion of links to updates of tasks
 pub fn validate_delete_link_task_updates(
     _action: DeleteLink,
     _original_action: CreateLink,
@@ -279,6 +291,7 @@ pub fn validate_delete_link_task_updates(
     )))
 }
 
+///Validating the creation of links to unfinished tasks
 pub fn validate_create_link_unfinished_tasks(
     _action: CreateLink,
     _base_address: AnyLinkableHash,
@@ -304,6 +317,7 @@ pub fn validate_create_link_unfinished_tasks(
     Ok(ValidateCallbackResult::Valid)
 }
 
+///Validating the deletion of links to unfinished tasks
 pub fn validate_delete_link_unfinished_tasks(
     _action: DeleteLink,
     _original_action: CreateLink,

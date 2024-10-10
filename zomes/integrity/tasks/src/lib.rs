@@ -26,6 +26,7 @@ pub fn genesis_self_check(
     Ok(ValidateCallbackResult::Valid)
 }
 
+///Validate the agent joining DNA
 pub fn validate_agent_joining(
     _agent_pub_key: AgentPubKey,
     _membrane_proof: &Option<MembraneProof>,
@@ -33,6 +34,7 @@ pub fn validate_agent_joining(
     Ok(ValidateCallbackResult::Valid)
 }
 
+///Validate actions
 #[hdk_extern]
 pub fn validate(op: Op) -> ExternResult<ValidateCallbackResult> {
     match op.flattened::<EntryTypes, LinkTypes>()? {

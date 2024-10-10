@@ -1,6 +1,7 @@
 use hdk::prelude::*;
 use tasks_integrity::*;
 
+///Allows other actions to be commited before creating this one
 pub fn create_relaxed(entry_type: EntryTypes) -> ExternResult<()> {
     HDK.with(|h| {
         let index = ScopedEntryDefIndex::try_from(&entry_type)?;
@@ -21,6 +22,7 @@ pub fn create_relaxed(entry_type: EntryTypes) -> ExternResult<()> {
     Ok(())
 }
 
+///Allowing other actions to be commited before doing update
 pub fn update_relaxed(
     original_action_address: ActionHash,
     entry_type: EntryTypes,
@@ -38,6 +40,7 @@ pub fn update_relaxed(
     Ok(())
 }
 
+///Allowing other actions to be commited before commiting link
 pub fn create_link_relaxed<T, E>(
     base_address: impl Into<AnyLinkableHash>,
     target_address: impl Into<AnyLinkableHash>,
@@ -66,6 +69,7 @@ where
     Ok(())
 }
 
+///Allowing other actions to be commited before deleting link
 pub fn delete_link_relaxed(address: ActionHash) -> ExternResult<()> {
     HDK.with(|h| {
         h.borrow()
@@ -75,6 +79,7 @@ pub fn delete_link_relaxed(address: ActionHash) -> ExternResult<()> {
     Ok(())
 }
 
+///Allowing other actions to be commited before deleting entry
 pub fn delete_relaxed(address: ActionHash) -> ExternResult<()> {
     HDK.with(|h| {
         h.borrow()

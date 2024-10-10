@@ -5,12 +5,12 @@ use tasks_integrity::*;
 pub mod task;
 pub mod unfinished_tasks;
 pub mod utils;
-
+///initialize app function
 #[hdk_extern]
 pub fn init(_: ()) -> ExternResult<InitCallbackResult> {
     Ok(InitCallbackResult::Pass)
 }
-
+///Signal types available
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(tag = "type")]
 pub enum Signal {
@@ -38,6 +38,7 @@ pub enum Signal {
     },
 }
 
+///Handle post commit actions
 #[hdk_extern(infallible)]
 pub fn post_commit(committed_actions: Vec<SignedActionHashed>) {
     for action in committed_actions {
@@ -47,6 +48,7 @@ pub fn post_commit(committed_actions: Vec<SignedActionHashed>) {
     }
 }
 
+///Take actions from signals
 fn signal_action(action: SignedActionHashed) -> ExternResult<()> {
     match action.hashed.content.clone() {
         Action::CreateLink(create_link) => {
@@ -139,6 +141,7 @@ fn signal_action(action: SignedActionHashed) -> ExternResult<()> {
     }
 }
 
+///Get entries for actions
 fn get_entry_for_action(action_hash: &ActionHash) -> ExternResult<Option<EntryTypes>> {
     let record = match get_details(action_hash.clone(), GetOptions::default())? {
         Some(Details::Record(record_details)) => record_details.record,
